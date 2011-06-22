@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = [%q{Ryan Ong}]
   s.date = %q{2011-06-22}
-  s.description = %q{TODO: longer description of your gem}
+  s.description = %q{A Mongoid Extention that simplifies and adds support for MongoDB Geo Spacial Calculations.}
   s.email = %q{ryanong@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE.txt",
@@ -40,6 +40,7 @@ Gem::Specification.new do |s|
     "lib/mongoid_spacial/spacial/core_ext.rb",
     "lib/mongoid_spacial/spacial/document.rb",
     "lib/mongoid_spacial/spacial/formulas.rb",
+    "mongoid_spacial.gemspec",
     "spec/config/mongod.conf",
     "spec/config/mongoid.yml",
     "spec/functional/mongoid/contexts/mongo_spec.rb",
