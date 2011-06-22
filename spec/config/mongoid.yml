@@ -1,0 +1,18 @@
+test:
+  database: mongoid_config_test
+  host: localhost
+  slaves:
+    # - host: localhost
+      # port: 27018
+    # - host: localhost
+      # port: 27019
+  allow_dynamic_fields: false
+  include_root_in_json: true
+  parameterize_keys: false
+  persist_in_safe_mode: false
+  raise_not_found_error: false
+  reconnect_time: 5
+  autocreate_indexes: false
+  persist_types: false
+  option_no_exist: false
+  skip_version_check: false
