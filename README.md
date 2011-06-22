@@ -37,7 +37,9 @@ end
 ```
 
 Before we manipulate the data mongoid_spacial handles is what we call points.
+
 Points can be:
+
 * an unordered hash with the lat long string keys defined when setting the field (only applies for setting the field)
 * longitude latitude array in that order - [long,lat]
 * an unordered hash with latitude key(:lat, :latitude) and a longitude key(:lon, :long, :lng, :longitude)
@@ -67,20 +69,21 @@ hudson.mouth  #=> [-74.026667, 40.703056] # notice how this returned as a lng,la
 # notice how the order of lng and lat were switched. it will always come out like this when using spacial.
 ```
 Mongoid Geo has extended all built in spacial symbol extentions
+
 * near
-    River.where(:source.near => [-73.98, 40.77])
-    River.where(:source.near => [[-73.98, 40.77],5]) # sets max distance of 5
-    River.where(:source.near => {:point => [-73.98, 40.77], :max => 5}) # sets max distance of 5
-    River.where(:source.near(:sphere) => [[-73.98, 40.77],5]) # sets max distance of 5 radians
-    River.where(:source.near(:sphere) => {:point => [-73.98, 40.77], :max => 5, :unit => :km}) # sets max distance of 5 km    
-    River.where(:source.near(:sphere) => [-73.98, 40.77])
+  * River.where(:source.near => [-73.98, 40.77])
+  * River.where(:source.near => [[-73.98, 40.77],5]) # sets max distance of 5
+  * River.where(:source.near => {:point => [-73.98, 40.77], :max => 5}) # sets max distance of 5
+  * River.where(:source.near(:sphere) => [[-73.98, 40.77],5]) # sets max distance of 5 radians
+  * River.where(:source.near(:sphere) => {:point => [-73.98, 40.77], :max => 5, :unit => :km}) # sets max distance of 5 km    
+  * River.where(:source.near(:sphere) => [-73.98, 40.77])
 * within
-    River.where(:source.within(:box) => [[-73.99756,40.73083], [-73.988135,40.741404]])
-    River.where(:source.within(:box) => [ {:lat => 40.73083, :lng => -73.99756}, [-73.988135,40.741404]])
-    River.where(:source.within(:polygon) => [ [ 10, 20 ], [ 10, 40 ], [ 30, 40 ], [ 30, 20 ] ]
-    River.where(:source.within(:polygon) => { a : { x : 10, y : 20 }, b : { x : 15, y : 25 }, c : { x : 20, y : 20 } })
-    River.where(:source.within(:center) => [[-73.98, 40.77],5])         # same format as near
-    River.where(:source.within(:center_sphere) => [[-73.98, 40.77],5])  # same format as near(:sphere)
+  * River.where(:source.within(:box) => [[-73.99756,40.73083], [-73.988135,40.741404]])
+  * River.where(:source.within(:box) => [ {:lat => 40.73083, :lng => -73.99756}, [-73.988135,40.741404]])
+  * River.where(:source.within(:polygon) => [ [ 10, 20 ], [ 10, 40 ], [ 30, 40 ], [ 30, 20 ] ]
+  * River.where(:source.within(:polygon) => { a : { x : 10, y : 20 }, b : { x : 15, y : 25 }, c : { x : 20, y : 20 } })
+  * River.where(:source.within(:center) => [[-73.98, 40.77],5])         # same format as near
+  * River.where(:source.within(:center_sphere) => [[-73.98, 40.77],5])  # same format as near(:sphere)
 
 One of the most handy features we have added is geo_near finder
 
