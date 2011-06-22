@@ -23,7 +23,7 @@ module Mongoid #:nodoc:
           v[:point] = v[:point].to_lng_lat if v[:point].respond_to?(:to_lng_lat)
           query = {"$#{operator}" => v[:point] }
           if v[:max]
-            unit = Mongoid::Spacial::EARTH_RADIUS[v[:unit]]
+            unit = Mongoid::Spacial.earth_radius[v[:unit]]
             query['$maxDistance'] = (unit) ? v[:max]/unit : v[:max] 
           end
           query

@@ -22,27 +22,34 @@ module Mongoid #:nodoc:
         if ['box','polygon'].index(@operator)
           input = input.values if input.kind_of?(Hash)
           if input.respond_to?(:map)
-            input.map{ |v| (v.respond_to?(:to_lng_lat)) ? v.to_lng_lat : v }
+            input.map!{ |v| (v.respond_to?(:to_lng_lat)) ? v.to_lng_lat : v }
           else
             input
           end
         elsif ['center','centerSphere'].index(@operator)
+
+          if input.kind_of? Hash
+            if input[:point]
+              input[:point] = input[:point].to_lng_lat if input[:point].respond_to?(:to_lng_lat)
+              if input[:max]
+                unit = Mongoid::Spacial.earth_radius[input[:unit]]
+                input[:max] = input[:max]/unit if unit
+                input = [input[:point],input[:max]]
+              else
+                input = input[:point]
+              end
+            elsif RUBY_VERSION.to_f > 1.9
+              input = input.values
+            end
+          end
+
           if input.kind_of? Array
             input[0] = input[0].to_lng_lat if input[0].respond_to?(:to_lng_lat)
-            input
-          elsif v.kind_of? Hash
-            input[:point] = input[:point].to_lng_lat if input[:point].respond_to?(:to_lng_lat)
-            query = input[:point]
-            if v[:max]
-              unit = Mongoid::Spacial::EARTH_RADIUS[v[:unit]]
-              v[:max] = v[:max]/unit if unit
-              query = [query,v[:max]]
-            end
-            query
           end
-        end
-      end
 
+        end
+        {'$within' => {"$#{@operator}"=>input} }
+      end
     end
   end
 end

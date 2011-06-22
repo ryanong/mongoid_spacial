@@ -6,270 +6,6 @@ describe Mongoid::Criterion::Inclusion do
     Person.delete_all
   end
 
-  describe "#all_in" do
-
-    context "when providing string ids" do
-
-      let!(:person) do
-        Person.create(:ssn => "444-44-4444")
-      end
-
-      let(:from_db) do
-        Person.all_in(:_id => [ person.id.to_s ])
-      end
-
-      it "returns the matching documents" do
-        from_db.should == [ person ]
-      end
-    end
-  end
-
-  describe "#any_in" do
-
-    context "when the field value is nil" do
-
-      let!(:person) do
-        Person.create(:title => nil)
-      end
-
-      context "when searching for any value" do
-
-        let(:from_db) do
-          Person.any_in(:title => [ true, false, nil ])
-        end
-
-        it "returns the matching documents" do
-          from_db.should == [ person ]
-        end
-      end
-    end
-
-    context "when the field value is false" do
-
-      let!(:person) do
-        Person.create(:terms => false)
-      end
-
-      context "when searching for any value" do
-
-        let(:from_db) do
-          Person.any_in(:terms => [ true, false, nil ])
-        end
-
-        it "returns the matching documents" do
-          from_db.should == [ person ]
-        end
-      end
-    end
-
-    context "when providing string ids" do
-
-      let!(:person) do
-        Person.create(:ssn => "444-44-4444")
-      end
-
-      let(:from_db) do
-        Person.any_in(:_id => [ person.id.to_s ])
-      end
-
-      it "returns the matching documents" do
-        from_db.should == [ person ]
-      end
-    end
-  end
-
-  describe "#any_of" do
-
-    let!(:person_one) do
-      Person.create(:title => "Sir", :age => 5, :ssn => "098-76-5432")
-    end
-
-    let!(:person_two) do
-      Person.create(:title => "Sir", :age => 7, :ssn => "098-76-5433")
-    end
-
-    let!(:person_three) do
-      Person.create(:title => "Madam", :age => 1, :ssn => "098-76-5434")
-    end
-
-    context "with a single match" do
-
-      let(:from_db) do
-        Person.where(:title => "Madam").any_of(:age => 1)
-      end
-
-      it "returns any matching documents" do
-        from_db.should == [ person_three ]
-      end
-    end
-
-    context "when chaining for multiple matches" do
-
-      let(:from_db) do
-        Person.any_of({ :age => 7 }, { :age.lt => 3 })
-      end
-
-      it "returns any matching documents" do
-        from_db.should == [ person_two, person_three ]
-      end
-    end
-
-    context "when using object ids" do
-
-      context "when provided strings as params" do
-
-        let(:from_db) do
-          Person.any_of(
-            { :_id => person_one.id.to_s },
-            { :_id => person_two.id.to_s }
-          )
-        end
-
-        it "returns the matching documents" do
-          from_db.should == [ person_one, person_two ]
-        end
-      end
-    end
-  end
-
-  describe "#find" do
-
-    let!(:person) do
-      Person.create(:title => "Sir")
-    end
-
-    context "when finding by an id" do
-
-      context "when the id is found" do
-
-        context "when the additional criteria matches" do
-
-          let!(:from_db) do
-            Person.where(:title => "Sir").find(person.id)
-          end
-
-          it "returns the matching document" do
-            from_db.should == person
-          end
-        end
-
-        context "when the additional criteria does not match" do
-
-          let(:from_db) do
-            Person.where(:title => "Madam").find(person.id)
-          end
-
-          it "raises a not found error" do
-            expect { from_db }.to raise_error(Mongoid::Errors::DocumentNotFound)
-          end
-        end
-      end
-
-      context "when the id is not found" do
-
-        context "when raising a not found error" do
-
-          it "raises an error" do
-            expect {
-              Person.where(:title => "Sir").find(BSON::ObjectId.new)
-            }.to raise_error(Mongoid::Errors::DocumentNotFound)
-          end
-        end
-
-        context "when not raising a not found error" do
-
-          before do
-            Mongoid.raise_not_found_error = false
-          end
-
-          after do
-            Mongoid.raise_not_found_error = true
-          end
-
-          let!(:from_db) do
-            Person.where(:title => "Sir").find(BSON::ObjectId.new)
-          end
-
-          it "returns nil" do
-            from_db.should be_nil
-          end
-        end
-      end
-    end
-
-    context "when finding by an array of ids" do
-
-      context "when the id is found" do
-
-        let!(:from_db) do
-          Person.where(:title => "Sir").find([ person.id ])
-        end
-
-        it "returns the matching document" do
-          from_db.should == [ person ]
-        end
-      end
-
-      context "when the id is not found" do
-
-        context "when raising a not found error" do
-
-          it "raises an error" do
-            expect {
-              Person.where(:title => "Sir").find([ BSON::ObjectId.new ])
-            }.to raise_error(Mongoid::Errors::DocumentNotFound)
-          end
-        end
-
-        context "when not raising a not found error" do
-
-          before do
-            Mongoid.raise_not_found_error = false
-          end
-
-          after do
-            Mongoid.raise_not_found_error = true
-          end
-
-          let!(:from_db) do
-            Person.where(:title => "Sir").find([ BSON::ObjectId.new ])
-          end
-
-          it "returns an empty array" do
-            from_db.should be_empty
-          end
-        end
-      end
-    end
-  end
-
-  describe "#near" do
-
-    let!(:berlin) do
-      Bar.create(:location => [ 52.30, 13.25 ])
-    end
-
-    let!(:prague) do
-      Bar.create(:location => [ 50.5, 14.26 ])
-    end
-
-    let!(:paris) do
-      Bar.create(:location => [ 48.48, 2.20 ])
-    end
-
-    let(:bars) do
-      Bar.near(:location => [ 41.23, 2.9 ])
-    end
-
-    before do
-      Bar.create_indexes
-    end
-
-    it "returns the documents sorted closest to furthest" do
-      bars.should == [ paris, prague, berlin ]
-    end
-  end
-
   describe "#where" do
 
     let(:dob) do
@@ -497,6 +233,124 @@ describe Mongoid::Criterion::Inclusion do
           Person.where(:things.matches => { :phone => "HTC Incredible" }).should == [person]
         end
       end
+
     end
+
+    context "Geo Spacial Complex Where" do
+
+      let!(:home) do
+        [-73.98,40.77]
+      end
+
+      describe "#near" do
+        before do
+          Bar.delete_all
+          Bar.create_indexes
+        end
+
+        let!(:berlin) do
+          Bar.create(:location => [ 52.30, 13.25 ])
+        end
+
+        let!(:prague) do
+          Bar.create(:location => [ 50.5, 14.26 ])
+        end
+
+        let!(:paris) do
+          Bar.create(:location => [ 48.48, 2.20 ])
+        end
+
+        it "returns the documents sorted closest to furthest" do
+          Bar.where(:location.near => [ 41.23, 2.9 ]).should == [ paris, prague, berlin ]
+        end
+
+        it "returns the documents sorted closest to furthest" do
+          Bar.where(:location.near => {:point=>[ 41.23, 2.9 ],:max => 20}).should == [ paris, prague, berlin ]
+        end
+
+        it "returns the documents sorted closest to furthest" do
+          Bar.where(:location.near_sphere => [ 41.23, 2.9 ]).should == [ paris, prague, berlin ]
+        end
+
+      end
+
+      context "#within" do
+
+        context ":box, :polygon" do
+          before do
+            Bar.delete_all
+            Bar.create_indexes
+          end
+
+          let!(:berlin) do
+            Bar.create(:name => 'berlin', :location => [ 52.30, 13.25 ])
+          end
+
+          let!(:prague) do
+            Bar.create(:name => 'prague',:location => [ 50.5, 14.26 ])
+          end
+
+          let!(:paris) do
+            Bar.create(:name => 'prague',:location => [ 48.48, 2.20 ])
+          end
+
+          it "returns the documents within a box" do
+            Bar.where(:location.within(:box) => [[ 47, 1 ],[ 49, 3 ]]).should == [ paris ]
+          end
+
+          it "returns the documents within a polygon", :if => (Mongoid.master.connection.server_version >= '1.9') do
+            Bar.where(:location.within(:polygon) => [[ 47, 1 ],[49,1.5],[ 49, 3 ],[46,5]]).should == [ paris ]
+          end
+
+          it "returns the documents within a center" do
+            Bar.where(:location.within(:center) => [[ 47, 1 ],4]).should == [ paris ]
+          end
+
+          it "returns the documents within a center_sphere" do
+            Bar.where(:location.within(:center_sphere) => [[ 48, 2 ],0.1]).should == [ paris ]
+          end
+
+        end
+        context ":circle :center_sphere" do
+          before do
+            Bar.delete_all
+            Bar.create_indexes
+          end
+          let!(:mile1) do
+            Bar.create(:name => 'mile1', :location => [-73.997345, 40.759382])
+          end
+
+          let!(:mile3) do 
+            Bar.create(:name => 'mile2', :location => [-73.927088, 40.752151])            
+          end
+
+          let!(:mile7) do 
+            Bar.create(:name => 'mile3', :location => [-74.0954913, 40.7161472])            
+          end
+
+          let!(:mile11) do 
+            Bar.create(:name => 'mile4', :location => [-74.0604951, 40.9178011])            
+          end
+
+          it "returns the documents within a center_sphere" do
+            Bar.where(:location.within(:center_sphere) => {:point => home,:max => 2, :unit => :mi}).should == [ mile1 ]
+          end
+
+          it "returns the documents within a center_sphere" do
+            Bar.where(:location.within(:center_sphere) => {:point => home,:max => 4, :unit => :mi}).should include(mile3) 
+          end
+
+          it "returns the documents within a center_sphere" do
+            Bar.where(:location.within(:center_sphere) => {:point => home,:max => 8, :unit => :mi}).should include(mile7) 
+          end
+
+          it "returns the documents within a center_sphere" do
+            Bar.where(:location.within(:center_sphere) => {:point => home,:max => 12, :unit => :mi}).should include(mile11) 
+          end
+        end
+      end
+    end
+
   end
+
 end

@@ -27,17 +27,17 @@ module Mongoid #:nodoc:
       # @options opts [Numeric] :max_distance The max distance of a row that should be returned in :unit(s)
       # @options opts [Numeric, :km, :k, :mi, :ft] :unit automatically sets :distance_multiplier and converts :max_distance
       # @options opts [true,false] :spherical Will determine the distance either by spherical calculation or flat calculation
-      # @options opts [TrueClass,Array<Symbol>] :calculate Which extra fields to calculate distance for in ruby, if set to TrueClass it will calculate all geo fields
+      # @options opts [TrueClass,Array<Symbol>] :calculate Which extra fields to calculate distance for in ruby, if set to TrueClass it will calculate all spacial fields
       #
       # @return [ Array ] Sorted Rows
       def geo_near(center, opts = {})
         center = center.to_lng_lat if center.respond_to?(:to_lng_lat)
 
-        if distance_multiplier = Mongoid::Spacial::EARTH_RADIUS[opts.delete(:unit)]
+        if distance_multiplier = Mongoid::Spacial.earth_radius[opts.delete(:unit)]
           opts[:distance_multiplier] = distance_multiplier
         end
 
-        query = create_geo_near_query(opts)
+        query = create_geo_near_query(center,opts)
         results = klass.db.command(query)
         if results['results'].kind_of?(Array) && results['results'].size > 0
           rows = results['results'].collect do |result|
@@ -51,12 +51,12 @@ module Mongoid #:nodoc:
               res.geo[key.snakecase.to_sym] = value
             end
             # dist_options[:formula] = opts[:formula] if opts[:formula]
-            opts[:calculate] = @@spacial_fields_indexed if opts[:calculate] == true
+            opts[:calculate] = klass.spacial_fields_indexed if klass.spacial_fields_indexed.kind_of?(Array) && opts[:calculate] == true
             if opts[:calculate]
               opts[:calculate] = [opts[:calculate]] unless opts[:calculate].kind_of? Array
               opts[:calculate] = opts[:calculate].map(&:to_sym) & geo_fields
-              if @@spacial_fields_indexed.size == 1
-                primary = @@spacial_fields_indexed.first
+              if klass.spacial_fields_indexed.kind_of?(Array) && klass.spacial_fields_indexed.size == 1
+                primary = klass.spacial_fields_indexed.first
               end
               opts[:calculate].each do |key|
                 key = (key.to_s+'_distance').to_s
@@ -86,7 +86,7 @@ module Mongoid #:nodoc:
 
       private
 
-      def create_geo_near_query(opts)
+      def create_geo_near_query(center,opts)
         # minimum query
         query = {
           :geoNear  => klass.to_s.tableize,
@@ -102,7 +102,7 @@ module Mongoid #:nodoc:
 
         # allow the use of complex werieis
         if opts[:query]
-          query['query']         = self.where(opts[:query]).selector
+          query['query']         = self.criteria.where(opts[:query]).selector
         elsif self.selector != {}
           query['query']         = self.selector
         end

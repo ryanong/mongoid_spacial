@@ -10,6 +10,7 @@ require "mongoid"
 require "mocha"
 require "rspec"
 require "mongoid_spacial"
+require 'ruby-debug'
 
 LOGGER = Logger.new($stdout)
 
@@ -37,5 +38,4 @@ RSpec.configure do |config|
     return true if value == :mongohq && !mongohq_configured
     return true if value == :user && !user_configured
   })
-  
 end

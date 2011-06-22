@@ -16,7 +16,7 @@ Set up some slugs:
 ```ruby
 class River
   include Mongoid::Document
-  include Mongoid::Geo::Document
+  include Mongoid::Spacial::Document
 
   field :name,              type: String
   field :length,            type: Integer
@@ -24,7 +24,7 @@ class River
   field :source,            type: Array,    spacial: true
   # if you want something besides the defaults {bit: 24, min: -180, max: 180} just set index to the options on the index
   # field :source,            type: Array,    spacial: true
-  # try not set index for this field manually as we record what geo fields are index for some handy fields later
+  # try not set index for this field manually as we record what spacial fields are index for some handy fields later
 
   # set return_array to true if you do not want a hash returned all the time
   field :mouth,             type: Array,    spacial: {lat: 'latitude', lng: 'longitude', return_array: true }
@@ -106,7 +106,7 @@ ToDo
 
 Thanks
 -----------
-* Thanks to Kristian Mandrup for creating the base of the gem
+* Thanks to Kristian Mandrup for creating the base of the gem and a few of the tests
 * Thanks to CarZen LLC. for letting me release the code we are using
 
 Contributing to mongoid_ranges

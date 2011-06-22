@@ -5,19 +5,22 @@ module Mongoid
 
       included do
         attr_accessor :geo
-        mattr_accessor :spacial_fields, :spacial_fields_indexed
+        cattr_accessor :spacial_fields, :spacial_fields_indexed
         @@spacial_fields = []
         @@spacial_fields_indexed = []
       end
 
       module ClassMethods #:nodoc:
-        def spacial_index name, options = {}
-          @@spacial_fields_indexed << name.to_sym
-          index [[ name, Mongo::GEO2D ]], options
+        # create spacial index for given field
+        # @param [String,Symbol] name
+        # @param [Hash] options options for spacial_index
+        def spacial_index name, *options
+          self.spacial_fields_indexed << name
+          index [[ name, Mongo::GEO2D ]], *options
         end
       end
 
-      module InstanceMethods
+      module InstanceMethods #:nodoc:
         def distance_from(key,center, unit = nil, formula = nil)
           loc = res.send(key)
           Mongoid::Spacial.distance(center, loc, unit, formula = nil)

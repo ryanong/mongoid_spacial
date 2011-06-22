@@ -20,7 +20,7 @@ module Support #:nodoc:
       configuration specs will not get run. You may set it up from the
       mongo console:
 
-        $ use mongoid_test;
+        $ use mongoid_spacial_test;
         $ db.addUser("mongoid", "test");
       ---------------------------------------------------------------------
       }
