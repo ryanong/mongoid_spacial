@@ -18,7 +18,7 @@ Jeweler::Tasks.new do |gem|
   gem.homepage = "http://github.com/ryanong/mongoid_spacial"
   gem.license = "MIT"
   gem.summary = %Q{A Mongoid Extention that simplifies and adds support for MongoDB Geo Spacial Calculations.}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.description = %Q{A Mongoid Extention that simplifies and adds support for MongoDB Geo Spacial Calculations.}
   gem.email = "ryanong@gmail.com"
   gem.authors = ["Ryan Ong"]
   # dependencies defined in Gemfile
