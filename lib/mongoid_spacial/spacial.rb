@@ -1,7 +1,7 @@
 require 'mongoid_spacial/spacial/core_ext'
 require 'mongoid_spacial/spacial/formulas'
 require 'mongoid_spacial/spacial/document'
-require 'mongoid_spacial/spacial/geo_near'
+require 'mongoid_spacial/spacial/geo_near_results'
 module Mongoid
   module Spacial
 

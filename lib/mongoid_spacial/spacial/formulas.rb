@@ -1,7 +1,6 @@
 module Mongoid
   module Spacial
     module Formulas
-      RAD_PER_DEG = Math::PI/180
 
       def self.n_vector(point1,point2)
         p1 = point1.map{|deg| deg * RAD_PER_DEG}

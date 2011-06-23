@@ -47,17 +47,18 @@ module Mongoid #:nodoc:
           opts[:page] ||= 1
           opts[:paginator] ||= Mongoid::Spacial.paginator()
 
-          if opts[:paginator] == :will_paginate
-            opts[:per_page] ||= klass.per_page
-          elsif opts[:paginator] == :kaminari
-            opts[:per_page] ||= Kaminari.config.default_per_page
-          else
-            opts[:per_page] ||= Mongoid::Spacial.default_per_page
-          end
+          opts[:per_page] ||= case opts[:paginator]
+                              when :will_paginate
+                                @document.per_page
+                              when :kaminari
+                                Kaminari.config.default_per_page
+                              else
+                                Mongoid::Spacial.default_per_page
+                              end
         end
         opts[:query] = create_geo_near_query(center,opts)
         results = klass.db.command(opts[:query])
-        Mongoid::Spacial::GeoNear.new(klass,results,opts)
+        Mongoid::Spacial::GeoNearResults.new(klass,results,opts)
       end
 
       private

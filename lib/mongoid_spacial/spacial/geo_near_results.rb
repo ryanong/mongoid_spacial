@@ -1,18 +1,17 @@
 module Mongoid
   module Spacial
-    class GeoNear < Array
-      attr_reader :stats, :document
-      attr_accessor :opts, :total_entries, :limit_value, :current_page
-      alias_method :per_page, :limit_value
+    class GeoNearResults < Array
+      attr_reader :stats, :document, :_original_array
+      attr_accessor :opts
 
       def initialize(document,results,opts = {})
         raise "class must include Mongoid::Spacial::Document" unless document.respond_to?(:spacial_fields_indexed)
         @document = document
         @opts = opts
         @stats = results['stats'] || {}
-        self.total_entries = @stats['nscanned']
-        self.limit_value = opts[:per_page]
-        self.current_page = opts[:page]
+        @opts[:total_entries] = opts[:query]["num"] || @stats['nscanned']
+        @limit_value = opts[:per_page]
+        @current_page = opts[:page]
 
         @_original_array = results['results'].collect do |result|
           res = Mongoid::Factory.from_db(@document, result.delete('obj'))
@@ -51,15 +50,61 @@ module Mongoid
         end
       end
 
+      def page(page, options = {})
+        new_collection = self.dup
+        
+        options = self.opts.merge(options)
+
+        options[:page] = page || 1
+
+        options[:paginator] ||= Mongoid::Spacial.paginator()
+
+        options[:per_page] ||= case options[:paginator]
+                            when :will_paginate
+                              @document.per_page
+                            when :kaminari
+                              Kaminari.config.default_per_page
+                            else
+                              Mongoid::Spacial.default_per_page
+                            end
+
+
+        start = (options[:page]-1)*options[:per_page] # assuming current_page is 1 based.
+        new_collection.replace(@_original_array[start, options[:per_page]] || [])
+
+        new_collection.opts[:page] = options[:page]
+        new_collection.opts[:paginator] = options[:paginator]
+        new_collection.opts[:per_page] = options[:per_page]
+
+        new_collection
+      end
+
+      def per(num)
+        self.page(current_page, :per_page => num)
+      end
+
+      def total_entries
+        @opts[:total_entries]
+      end
+
+      def current_page
+        @opts[:page]
+      end
+
+      def limit_value
+        @opts[:per_page]
+      end
+      alias_method :per_page, :limit_value
+
       def num_pages
-        self.total_entries/self.per_page
+        @opts[:total_entries]/@opts[:per_page]
       end
       alias_method :total_pages, :num_pages
 
       def out_of_bounds?
         self.current_page > self.total_pages
       end
-      
+
       def offset
         (self.current_page - 1) * self.per_page
       end
