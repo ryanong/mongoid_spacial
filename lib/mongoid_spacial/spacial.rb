@@ -1,7 +1,7 @@
 require 'mongoid_spacial/spacial/core_ext'
+require 'mongoid_spacial/spacial/formulas'
 module Mongoid
   module Spacial
-    autoload :Formulas,          'mongoid_spacial/spacial/formulas'
     autoload :Document,          'mongoid_spacial/spacial/document'
     
     EARTH_RADIUS_KM = 6371 # taken directly from mongodb
