@@ -89,7 +89,6 @@ One of the most handy features we have added is geo_near finder
 
 ```ruby
 # accepts all criteria chains except without, only, asc, desc, order\_by
-# pagination does not work yet but will be added in the next version
 River.where(:name=>'hudson').geo_near({:lat => 40.73083, :lng => -73.99756})
 
 # geo\_near accepts a few parameters besides a point
@@ -99,13 +98,47 @@ River.where(:name=>'hudson').geo_near({:lat => 40.73083, :lng => -73.99756})
 # :max\_distance - Integer
 # :distance\_multiplier - Integer
 # :spherical - true - To enable spherical calculations
+River.geo_near([-73.99756,40.73083], :max_distance => 4, :unit => :mi, :spherical => true)
+```
+
+There are two types of pagination!
+
+* MongoDB Pagination - Stores start of rows to page limit in memory
+* Post Query Pagination - Stores all rows in memory
+
+Post-Result is only minutely slower than MongoDB because MongoDB has to calculate distance for all of the rows anyway. The slow up is in the transfer of data from the database to ruby.
+
+Post-Result has some advantages that are listed below.
+
+```ruby
+# MongoDB pagination
+# overwrites #skip chain method
 # :page - pagination will be enabled if set to any variable including nil, pagination will not be enabled if either :per\_page or :paginator is set
 #   :per\_page
 #   :paginator - Choose which paginator to use. [default :arrary]
 #     Prefered method to set is Mongoid::Spacial.paginator=:array
 #     Available Paginators [:kaminari, :will\_paginate, :array]
 #     The only thing this does really is configure default per\_page so it is only kind of useful
-River.geo_near([-73.99756,40.73083], :max_distance => 4, :unit => :mi, :spherical => true, :page => 1)
+River.geo_near([-73.99756,40.73083], :page => 1)
+```
+
+```ruby
+# Post Query Pagination
+# At carzen we use Post Query Pagination because we need to re-sort our rows after fetching. Pagination is not friendly with re-sorting.
+# You can jump pages continously without querying the database again.
+# listens to #limit/:num & #skip before geo\_near
+# #page(page\_number, opts = {})
+#  opts:
+#   :per\_page
+#   :paginator 
+# #per(per\_page\_number, opts = {})
+#  opts:
+#   :page
+#   :paginator
+#
+# both return a GeoNearResults, which is really just a modified Array
+# #per really just #page but just moves the options around 
+River.geo_near([-73.99756,40.73083]).per(25).page(1)
 ```
 
 Thanks

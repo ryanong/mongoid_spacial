@@ -36,6 +36,8 @@ module Mongoid #:nodoc:
         center = center.to_lng_lat if center.respond_to?(:to_lng_lat)
 
         # set default opts
+        opts[:skip] ||= 0
+        
         if unit = Mongoid::Spacial.earth_radius[opts[:unit]]
           opts[:unit] = (opts[:spherical]) ? unit : unit * Mongoid::Spacial::RAD_PER_DEG
         end
@@ -72,11 +74,11 @@ module Mongoid #:nodoc:
 
         # create limit and use skip
         if opts[:num]
-          query['num']         = (opts[:skip] || 0) + opts[:num].to_i
+          query['num']         = opts[:skip] + opts[:num].to_i
         elsif opts[:limit]
-          query['num']         = (opts[:skip] || 0) + opts[:limit]
+          query['num']         = opts[:skip] + opts[:limit]
         elsif opts[:page]
-          query['num'] = (opts[:page] * opts[:per_page])
+          query['num'] = opts[:skip] +(opts[:page] * opts[:per_page])
         end
 
         # allow the use of complex werieis

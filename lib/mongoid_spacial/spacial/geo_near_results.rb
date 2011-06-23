@@ -9,6 +9,7 @@ module Mongoid
         @document = document
         @opts = opts
         @stats = results['stats'] || {}
+        @opts[:skip] ||= 0
         @opts[:total_entries] = opts[:query]["num"] || @stats['nscanned']
         @limit_value = opts[:per_page]
         @current_page = opts[:page]
@@ -42,11 +43,9 @@ module Mongoid
 
         if @opts[:page]
           start = (@opts[:page]-1)*@opts[:per_page] # assuming current_page is 1 based.
-          super(@_original_array[start, @opts[:per_page]] || [])
-        elsif @opts[:skip] && @_original_array.size > @opts[:skip]
-          super(@_original_array[@opts[:skip]..-1] || [])
+          super(@_original_array[@opts[:skip]+start, @opts[:per_page]] || [])
         else
-          super(@_original_array || [])
+          super(@_original_array[@opts[:skip]..-1] || [])
         end
       end
 
@@ -70,7 +69,7 @@ module Mongoid
 
 
         start = (options[:page]-1)*options[:per_page] # assuming current_page is 1 based.
-        new_collection.replace(@_original_array[start, options[:per_page]] || [])
+        new_collection.replace(@_original_array[@opts[:skip]+start, options[:per_page]] || [])
 
         new_collection.opts[:page] = options[:page]
         new_collection.opts[:paginator] = options[:paginator]
