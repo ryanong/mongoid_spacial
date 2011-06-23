@@ -37,7 +37,7 @@ module Mongoid #:nodoc:
 
         # set default opts
         if unit = Mongoid::Spacial.earth_radius[opts[:unit]]
-          opts[:unit] = (opts[:spherical]) ? unit * Mongoid::Spacial::RAD_PER_DEG : unit
+          opts[:unit] = (opts[:spherical]) ? unit : unit * Mongoid::Spacial::RAD_PER_DEG
         end
 
         opts[:distance_multiplier] = opts[:unit] if opts[:unit].kind_of?(Numeric)
