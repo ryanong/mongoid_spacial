@@ -36,8 +36,8 @@ module Mongoid #:nodoc:
         center = center.to_lng_lat if center.respond_to?(:to_lng_lat)
 
         # set default opts
-        if distance_multiplier = Mongoid::Spacial.earth_radius[opts.delete(:unit)]
-          opts[:distance_multiplier] = distance_multiplier
+        if opts[:unit].kind_of?(Numeric) || opts[:unit] = Mongoid::Spacial.earth_radius[opts[:unit]]
+          opts[:distance_multiplier] = opts[:unit]
         end
   
         # setup paging.
@@ -53,8 +53,8 @@ module Mongoid #:nodoc:
             opts[:per_page] ||= Mongoid::Spacial.default_per_page
           end
         end
-        query = create_geo_near_query(center,opts)
-        results = klass.db.command(query)
+        opts[:query] = create_geo_near_query(center,opts)
+        results = klass.db.command(opts[:query])
         Mongoid::Spacial::GeoNear.new(klass,results,opts)
       end
 
@@ -85,7 +85,7 @@ module Mongoid #:nodoc:
 
         if opts[:max_distance]
           query['maxDistance'] = opts[:max_distance]
-          query['maxDistance'] = query['maxDistance']/opts[:distance_multiplier] if opts[:distance_multiplier]
+          query['maxDistance'] = query['maxDistance']/opts[:unit] if opts[:unit]
         end
 
         if klass.db.connection.server_version >= '1.7'
