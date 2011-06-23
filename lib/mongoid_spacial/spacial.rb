@@ -14,6 +14,8 @@ module Mongoid
       :ft => EARTH_RADIUS_KM*5280*0.621371192,
     }
 
+    RAD_PER_DEG = Math::PI/180
+
     LNG_SYMBOLS = [:x, :lon, :long, :lng, :longitude]
     LAT_SYMBOLS = [:y, :lat, :latitude]
 
