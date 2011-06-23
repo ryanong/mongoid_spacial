@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mongoid_spacial}
-  s.version = "0.0.1"
+  s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = [%q{Ryan Ong}]
-  s.date = %q{2011-06-22}
+  s.date = %q{2011-06-23}
   s.description = %q{A Mongoid Extention that simplifies and adds support for MongoDB Geo Spacial Calculations.}
   s.email = %q{ryanong@gmail.com}
   s.extra_rdoc_files = [
@@ -40,6 +40,7 @@ Gem::Specification.new do |s|
     "lib/mongoid_spacial/spacial/core_ext.rb",
     "lib/mongoid_spacial/spacial/document.rb",
     "lib/mongoid_spacial/spacial/formulas.rb",
+    "lib/mongoid_spacial/spacial/geo_near.rb",
     "mongoid_spacial.gemspec",
     "spec/config/mongod.conf",
     "spec/config/mongoid.yml",
@@ -116,10 +117,11 @@ Gem::Specification.new do |s|
     "spec/models/wiki_page.rb",
     "spec/spec_helper.rb",
     "spec/support/authentication.rb",
-    "spec/unit/mongoid_spacial/criterion/complex_spec.rb",
-    "spec/unit/mongoid_spacial/criterion/inclusion_spec.rb",
-    "spec/unit/mongoid_spacial/criterion/near_spacial_spec.rb",
-    "spec/unit/mongoid_spacial/criterion/within_spacial_spec.rb"
+    "spec/unit/mongoid/criterion/complex_spec.rb",
+    "spec/unit/mongoid/criterion/inclusion_spec.rb",
+    "spec/unit/mongoid/criterion/near_spacial_spec.rb",
+    "spec/unit/mongoid/criterion/within_spacial_spec.rb",
+    "spec/unit/mongoid/spacial/formulas_spec.rb"
   ]
   s.homepage = %q{http://github.com/ryanong/mongoid_spacial}
   s.licenses = [%q{MIT}]
