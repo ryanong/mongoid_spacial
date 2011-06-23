@@ -2,17 +2,17 @@ module Mongoid
   module Spacial
     class GeoNear < Array
       attr_reader :stats, :document
-      attr_accessor :opts, :total_entries, :per_page, :current_page
-      alias_method :limit_value, :per_page
+      attr_accessor :opts, :total_entries, :limit_value, :current_page
+      alias_method :per_page, :limit_value
 
       def initialize(document,results,opts = {})
         raise "class must include Mongoid::Spacial::Document" unless document.respond_to?(:spacial_fields_indexed)
         @document = document
         @opts = opts
-        @stats = results['stats']
-        @total_entries = @stats['nscanned']
-        @per_page = opts[:per_page]
-        @current_page = opts[:page]
+        @stats = results['stats'] || {}
+        self.total_entries = @stats['nscanned']
+        self.limit_value = opts[:per_page]
+        self.current_page = opts[:page]
 
         @_original_array = results['results'].collect do |result|
           res = Mongoid::Factory.from_db(@document, result.delete('obj'))
@@ -52,26 +52,26 @@ module Mongoid
       end
 
       def num_pages
-        total_entries/per_page
+        self.total_entries/self.per_page
       end
       alias_method :total_pages, :num_pages
 
       def out_of_bounds?
-        current_page > total_pages
+        self.current_page > self.total_pages
       end
       
       def offset
-        (current_page - 1) * per_page
+        (self.current_page - 1) * self.per_page
       end
 
       # current_page - 1 or nil if there is no previous page
       def previous_page
-        current_page > 1 ? (current_page - 1) : nil
+        self.current_page > 1 ? (self.current_page - 1) : nil
       end
 
       # current_page + 1 or nil if there is no next page
       def next_page
-        current_page < total_pages ? (current_page + 1) : nil
+        self.current_page < self.total_pages ? (self.current_page + 1) : nil
       end
 
     end
