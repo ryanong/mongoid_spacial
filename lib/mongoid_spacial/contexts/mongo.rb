@@ -36,10 +36,11 @@ module Mongoid #:nodoc:
         center = center.to_lng_lat if center.respond_to?(:to_lng_lat)
 
         # set default opts
-        if opts[:unit].kind_of?(Numeric) || opts[:unit] = Mongoid::Spacial.earth_radius[opts[:unit]]
-          opts[:unit] *= Mongoid::Spacial::RAD_PER_DEG unless opts[:spherical]
-          opts[:distance_multiplier] = opts[:unit]
+        if unit = Mongoid::Spacial.earth_radius[opts[:unit]]
+          opts[:unit] = (opts[:spherical]) ? unit * Mongoid::Spacial::RAD_PER_DEG : unit
         end
+
+        opts[:distance_multiplier] = opts[:unit] if opts[:unit].kind_of?(Numeric)
   
         # setup paging.
         if opts.has_key?(:page)
