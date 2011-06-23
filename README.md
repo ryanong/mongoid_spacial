@@ -27,7 +27,7 @@ class River
   # try not set index for this field manually as we record what spacial fields are index for some handy fields later
 
   # set return_array to true if you do not want a hash returned all the time
-  field :mouth,             type: Array,    spacial: {lat: 'latitude', lng: 'longitude', return_array: true }
+  field :mouth,             type: Array,    spacial: {lat: :latitude, lng: :longitude, return_array: true }
 
   # simplified spacial indexing
   # you can only index one
@@ -57,14 +57,13 @@ hudson = River.create(
   # when setting array LONGITUDE MUST BE FIRST LATITUDE MUST BE SECOND
   # source: [-73.935833,44.106667],
   # but we can use hash in any order,
-  # the default keys for latitude and longitude are 'lat' and 'lng' respectively
-  source: {'lat' => 44.106667, 'lng' => -73.935833},
-  # remember keys must be strings
-  mouth: {'latitude' => 40.703056, 'longitude' => -74.026667}
+  # the default keys for latitude and longitude are :lat and :lng respectively
+  source: {:lat => 44.106667, :lng => -73.935833},
+  mouth: {:latitude => 40.703056, :longitude => -74.026667}
 )
 
 # now to access this spacial information we can now do this
-hudson.source #=> {'lng' => -73.935833, 'lat' => 44.106667}
+hudson.source #=> {:lng => -73.935833, :lat => 44.106667}
 hudson.mouth  #=> [-74.026667, 40.703056] # notice how this returned as a lng,lat array because return_array was true
 # notice how the order of lng and lat were switched. it will always come out like this when using spacial.
 ```
