@@ -1,16 +1,17 @@
 module Mongoid
   module Spacial
     class GeoNear < Array
-      attr_reader :stats
+      attr_reader :stats, :document
+      attr_accessor :opts
 
-      def initialize(klass,results,opts = {})
+      def initialize(document,results,opts = {})
         raise "class must include Mongoid::Spacial::Document" unless klass.respond_to?(:spacial_fields_indexed)
-        @klass = klass
+        @document = document
         @opts = opts
         @stats = results['stats']
 
         @_original_array = results['results'].collect do |result|
-          res = Mongoid::Factory.from_db(klass, result.delete('obj'))
+          res = Mongoid::Factory.from_db(@document, result.delete('obj'))
           res.geo = {}
           # camel case is awkward in ruby when using variables...
           if result['dis']
@@ -20,12 +21,12 @@ module Mongoid
             res.geo[key.snakecase.to_sym] = value
           end
           # dist_options[:formula] = opts[:formula] if opts[:formula]
-          @opts[:calculate] = klass.spacial_fields_indexed if klass.spacial_fields_indexed.kind_of?(Array) && @opts[:calculate] == true
+          @opts[:calculate] = @document.spacial_fields_indexed if @document.spacial_fields_indexed.kind_of?(Array) && @opts[:calculate] == true
           if @opts[:calculate]
             @opts[:calculate] = [@opts[:calculate]] unless @opts[:calculate].kind_of? Array
             @opts[:calculate] = @opts[:calculate].map(&:to_sym) & geo_fields
-            if klass.spacial_fields_indexed.kind_of?(Array) && klass.spacial_fields_indexed.size == 1
-              primary = klass.spacial_fields_indexed.first
+            if @document.spacial_fields_indexed.kind_of?(Array) && @document.spacial_fields_indexed.size == 1
+              primary = @document.spacial_fields_indexed.first
             end
             @opts[:calculate].each do |key|
               key = (key.to_s+'_distance').to_sym
