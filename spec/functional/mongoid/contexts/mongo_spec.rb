@@ -86,18 +86,18 @@ describe Mongoid::Contexts::Mongo do
       Bar.delete_all
       Bar.create_indexes
 
-      100.times do
+      50.times do
         Bar.create({:location => [rand(360)-180,rand(360)-180]})
       end
     end
     context ":paginator :array" do
-      [nil,1,2,3,4].each do |page|          
+      [nil,1,2].each do |page|          
         it "page=#{page} should have 25" do
           Bar.geo_near([1,1], :page => page).size.should == 25
         end
       end
 
-      it "page=20 should have 0" do
+      it "page=3 should have 0" do
         Bar.geo_near([1,1], :page => 20).size.should == 0
       end
       
@@ -105,7 +105,21 @@ describe Mongoid::Contexts::Mongo do
         Bar.geo_near([1,1], :page => 1, :per_page => 5).size.should == 5
       end
     end
+
+    context ":paginator :kaminari" do 
+      let(:near) {Bar.geo_near([1,1], :page => 1)}
+      it "should have current_page" do
+        near.current_page.should == 1
+      end
+
+      it "should have num_pages" do
+        near.num_pages.should == 2
+      end
+
+      it "should have limit_value" do
+        near.limit_value.should == 25
+      end
+    end      
   end
 
 end
-

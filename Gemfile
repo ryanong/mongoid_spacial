@@ -24,6 +24,7 @@ group :test, :development do
 end
 
 group :test do
+  gem 'rspec-rails'
   gem 'mocha'
   gem 'will_paginate'
   gem 'kaminari'

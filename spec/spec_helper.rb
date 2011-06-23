@@ -10,9 +10,12 @@ require "mongoid"
 require "mocha"
 require "rspec"
 require "mongoid_spacial"
-require 'ruby-debug'
 
 LOGGER = Logger.new($stdout)
+
+if RUBY_VERSION >= '1.9.2'
+  YAML::ENGINE.yamler = 'syck'
+end
 
 Mongoid.configure do |config|
   name = "mongoid_spacial_test"
@@ -35,7 +38,6 @@ RSpec.configure do |config|
   warn(Support::Authentication.message) unless user_configured
 
   config.filter_run_excluding(:config => lambda { |value|
-    return true if value == :mongohq && !mongohq_configured
     return true if value == :user && !user_configured
   })
 end
