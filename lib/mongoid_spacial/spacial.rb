@@ -3,7 +3,7 @@ require 'mongoid_spacial/spacial/formulas'
 module Mongoid
   module Spacial
     autoload :Document,          'mongoid_spacial/spacial/document'
-    autoload :GeoNear,          'mongoid_spacial/spacial/geo_near'
+    autoload :GeoNear,           'mongoid_spacial/spacial/geo_near'
 
     EARTH_RADIUS_KM = 6371 # taken directly from mongodb
 

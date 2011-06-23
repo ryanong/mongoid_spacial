@@ -26,7 +26,7 @@ module Mongoid
               primary = klass.spacial_fields_indexed.first
             end
             opts[:calculate].each do |key|
-              key = (key.to_s+'_distance').to_s
+              key = (key.to_s+'_distance').to_sym
               res.geo[key] = res.distance_from(key,center, opts[:distance_multiplier])
               res.geo[:distance] = res.geo[key] if primary && key == primary
             end

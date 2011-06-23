@@ -1,9 +1,12 @@
 module Mongoid
   module Spacial
     module Formulas
-      RAD_PER_DEG = 0.017453293
+      RAD_PER_DEG = Math::PI/180
 
-      def n_vector(p1,p2)
+      def self.n_vector(point1,point2)
+        p1 = point1.map{|deg| deg * RAD_PER_DEG}
+        p2 = point2.map{|deg| deg * RAD_PER_DEG}
+
         sin_x1 = Math.sin(p1[0])
         cos_x1 = Math.cos(p1[0])
 
@@ -19,26 +22,20 @@ module Mongoid
         cross_prod =  (cos_y1*cos_x1 * cos_y2*cos_x2) +
           (cos_y1*sin_x1 * cos_y2*sin_x2) +
           (sin_y1        * sin_y2)
+
+        return cross_prod > 0 ? 0 : Math::PI if (cross_prod >= 1 || cross_prod <= -1) 
+
         Math.acos(cross_prod)
       end
 
-      def haversine(p1,p2)
-        lon1,lat1=p1
-        lon2,lat2=p2
+      def self.haversine(point1,point2)
+        p1 = point1.map{|deg| deg * RAD_PER_DEG}
+        p2 = point2.map{|deg| deg * RAD_PER_DEG}
 
-        dlon = lon2 - lon1
-        dlat = lat2 - lat1
+        dlon = p2[0] - p1[0]
+        dlat = p2[1] - p1[1]
 
-        dlon_rad = dlon * RAD_PER_DEG
-        dlat_rad = dlat * RAD_PER_DEG
-
-        lat1_rad = lat1 * RAD_PER_DEG
-        lon1_rad = lon1 * RAD_PER_DEG
-
-        lat2_rad = lat2 * RAD_PER_DEG
-        lon2_rad = lon2 * RAD_PER_DEG
-
-        a = (Math.sin(dlat_rad/2))**2 + Math.cos(lat1_rad) * Math.cos(lat2_rad) * (Math.sin(dlon_rad/2))**2
+        a = (Math.sin(dlat/2))**2 + Math.cos(p1[1]) * Math.cos(p2[1]) * (Math.sin(dlon/2))**2
 
         2 * Math.atan2( Math.sqrt(a), Math.sqrt(1-a))
       end
