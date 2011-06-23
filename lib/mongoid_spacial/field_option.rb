@@ -4,8 +4,8 @@ field = (defined?(Mongoid::Field)) ? Mongoid::Field : Mongoid::Fields
 
 field.option :spacial do |model,field,options|
   options = {} unless options.kind_of?(Hash)
-  lat_meth = options[:lat] || "lat"
-  lng_meth = options[:lng] || "lng"
+  lat_meth = options[:lat] || :lat
+  lng_meth = options[:lng] || :lng
   model.class_eval do
     self.spacial_fields ||= []
     self.spacial_fields << field.name.to_sym if self.spacial_fields.kind_of? Array
