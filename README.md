@@ -22,15 +22,13 @@ class River
   field :length,            type: Integer
   field :average_discharge, type: Integer
   field :source,            type: Array,    spacial: true
-  # if you want something besides the defaults {bit: 24, min: -180, max: 180} just set index to the options on the index
-  # field :source,            type: Array,    spacial: true
-  # try not set index for this field manually as we record what spacial fields are index for some handy fields later
 
   # set return_array to true if you do not want a hash returned all the time
   field :mouth,             type: Array,    spacial: {lat: :latitude, lng: :longitude, return_array: true }
 
   # simplified spacial indexing
-  # you can only index one
+  # you can only index one point in mongodb version below 1.9
+  # if you want something besides the defaults {bit: 24, min: -180, max: 180} just set index to the options on the index
   spacial_index :source
   # alternative 
 end
