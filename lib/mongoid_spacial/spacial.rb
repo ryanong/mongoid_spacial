@@ -1,9 +1,9 @@
 require 'mongoid_spacial/spacial/core_ext'
 require 'mongoid_spacial/spacial/formulas'
+require 'mongoid_spacial/spacial/document'
+require 'mongoid_spacial/spacial/geo_near'
 module Mongoid
   module Spacial
-    autoload :Document,          'mongoid_spacial/spacial/document'
-    autoload :GeoNear,           'mongoid_spacial/spacial/geo_near'
 
     EARTH_RADIUS_KM = 6371 # taken directly from mongodb
 
@@ -17,12 +17,13 @@ module Mongoid
     LNG_SYMBOLS = [:x, :lon, :long, :lng, :longitude]
     LAT_SYMBOLS = [:y, :lat, :latitude]
 
-    def distance(p1,p2,unit = nil, formula = nil)
+    def self.distance(p1,p2,unit = nil, formula = nil)
       formula ||= self.distance_formula
       unit = earth_radius[unit] if unit.kind_of?(Symbol) && earth_radius[unit]
       rads = Formulas.send(formula, p1, p2)
       (unit.kind_of?(Numeric)) ? unit*rads : rads
     end
+
     mattr_accessor :lng_symbols
     @@lng_symbols = LNG_SYMBOLS.dup
 
@@ -35,8 +36,8 @@ module Mongoid
     mattr_accessor :distance_formula
     @@distance_formula = :n_vector
 
-    mattr_accessor :paginator
-    @@paginator = :array
+      mattr_accessor :paginator
+      @@paginator = :array
 
     mattr_accessor :default_per_page
     @@default_per_page = 25
