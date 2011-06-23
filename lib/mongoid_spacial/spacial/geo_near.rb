@@ -2,13 +2,14 @@ module Mongoid
   module Spacial
     class GeoNear < Array
       attr_reader :stats, :document
-      attr_accessor :opts
+      attr_accessor :opts, :total_entries
 
       def initialize(document,results,opts = {})
         raise "class must include Mongoid::Spacial::Document" unless klass.respond_to?(:spacial_fields_indexed)
         @document = document
         @opts = opts
         @stats = results['stats']
+        @opts['total_entries'] = @stats['nscanned']
 
         @_original_array = results['results'].collect do |result|
           res = Mongoid::Factory.from_db(@document, result.delete('obj'))
@@ -52,7 +53,7 @@ module Mongoid
       end
 
       def num_pages
-        @stats['nscanned']/@opts[:per_page]
+        total_entries/@opts[:per_page]
       end
       alias_method :total_pages, :num_pages
 
@@ -80,7 +81,7 @@ module Mongoid
       end
 
       def total_entries
-        @stats['nscanned']
+        @opts['total_entries']
       end
     end
   end
