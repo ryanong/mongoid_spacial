@@ -39,17 +39,19 @@ module Mongoid #:nodoc:
         if distance_multiplier = Mongoid::Spacial.earth_radius[opts.delete(:unit)]
           opts[:distance_multiplier] = distance_multiplier
         end
-
+  
+        # setup paging.
         if opts.has_key?(:page)
           opts[:page] ||= 1
-          opts[:paginator] ||= Mongoid::Spacial.paginator
-            if opts[:paginator] == :will_paginate
-              opts[:per_page] ||= klass.per_page
-            elsif opts[:paginator] == :kaminari
-              opts[:per_page] ||= Kaminari.config.default_per_page
-            else
-              opts[:per_page] ||= 25
-            end
+          opts[:paginator] ||= Mongoid::Spacial.paginator()
+
+          if opts[:paginator] == :will_paginate
+            opts[:per_page] ||= klass.per_page
+          elsif opts[:paginator] == :kaminari
+            opts[:per_page] ||= Kaminari.config.default_per_page
+          else
+            opts[:per_page] ||= Mongoid::Spacial.default_per_page
+          end
         end
         query = create_geo_near_query(center,opts)
         results = klass.db.command(query)

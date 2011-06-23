@@ -36,6 +36,9 @@ module Mongoid
     @@distance_formula = :n_vector
 
     mattr_accessor :paginator
-    @@paginator = :kaminari
+    @@paginator = :array
+
+    mattr_accessor :default_per_page
+    @@default_per_page = 25
   end
 end

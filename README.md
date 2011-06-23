@@ -99,13 +99,14 @@ River.where(:name=>'hudson').geo_near({:lat => 40.73083, :lng => -73.99756})
 # :max\_distance - Integer
 # :distance\_multiplier - Integer
 # :spherical - true - To enable spherical calculations
-River.geo_near([-73.99756,40.73083], :max_distance => 4, :unit => :mi, :spherical)
-
+# :page - pagination will be enabled if set to any variable including nil, pagination will not be enabled if either :per\_page or :paginator is set
+#   :per\_page
+#   :paginator - Choose which paginator to use. [default :arrary]
+#     Prefered method to set is Mongoid::Spacial.paginator=:array
+#     Available Paginators [:kaminari, :will\_paginate, :array]
+#     The only thing this does really is configure default per\_page so it is only kind of useful
+River.geo_near([-73.99756,40.73083], :max_distance => 4, :unit => :mi, :spherical => true, :page => 1)
 ```
-
-ToDo
------------
- 1. Add pagination 
 
 Thanks
 -----------

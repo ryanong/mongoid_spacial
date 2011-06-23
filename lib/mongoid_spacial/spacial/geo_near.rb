@@ -5,7 +5,9 @@ module Mongoid
 
       def initialize(klass,results,opts = {})
         raise "class must include Mongoid::Spacial::Document" unless klass.respond_to?(:spacial_fields_indexed)
-        @klass, @stats,@opts = klass,results['stats'],opts
+        @klass = klass
+        @opts = opts
+        @stats = results['stats']
 
         @_original_array = results['results'].collect do |result|
           res = Mongoid::Factory.from_db(klass, result.delete('obj'))
@@ -18,29 +20,29 @@ module Mongoid
             res.geo[key.snakecase.to_sym] = value
           end
           # dist_options[:formula] = opts[:formula] if opts[:formula]
-          opts[:calculate] = klass.spacial_fields_indexed if klass.spacial_fields_indexed.kind_of?(Array) && opts[:calculate] == true
-          if opts[:calculate]
-            opts[:calculate] = [opts[:calculate]] unless opts[:calculate].kind_of? Array
-            opts[:calculate] = opts[:calculate].map(&:to_sym) & geo_fields
+          @opts[:calculate] = klass.spacial_fields_indexed if klass.spacial_fields_indexed.kind_of?(Array) && @opts[:calculate] == true
+          if @opts[:calculate]
+            @opts[:calculate] = [@opts[:calculate]] unless @opts[:calculate].kind_of? Array
+            @opts[:calculate] = @opts[:calculate].map(&:to_sym) & geo_fields
             if klass.spacial_fields_indexed.kind_of?(Array) && klass.spacial_fields_indexed.size == 1
               primary = klass.spacial_fields_indexed.first
             end
-            opts[:calculate].each do |key|
+            @opts[:calculate].each do |key|
               key = (key.to_s+'_distance').to_sym
-              res.geo[key] = res.distance_from(key,center, opts[:distance_multiplier])
+              res.geo[key] = res.distance_from(key,center, @opts[:distance_multiplier])
               res.geo[:distance] = res.geo[key] if primary && key == primary
             end
           end
           res
         end
 
-        if opts[:page]
-          start = (opts[:page]-1)*opts[:per_page] # assuming current_page is 1 based.
-          super(@_original_array[start, opts[:per_page]])
-        elsif opts[:skip] && @_original_array.size > opts[:skip]
-          super(@_original_array[opts[:skip]..-1])
+        if @opts[:page]
+          start = (@opts[:page]-1)*@opts[:per_page] # assuming current_page is 1 based.
+          super(@_original_array[start, @opts[:per_page]] || [])
+        elsif @opts[:skip] && @_original_array.size > @opts[:skip]
+          super(@_original_array[@opts[:skip]..-1] || [])
         else
-          super(@_original_array)
+          super(@_original_array || [])
         end
       end
 
