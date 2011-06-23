@@ -3,7 +3,8 @@ require 'mongoid_spacial/spacial/formulas'
 module Mongoid
   module Spacial
     autoload :Document,          'mongoid_spacial/spacial/document'
-    
+    autoload :GeoNear,          'mongoid_spacial/spacial/geo_near'
+
     EARTH_RADIUS_KM = 6371 # taken directly from mongodb
 
     EARTH_RADIUS = {
@@ -12,7 +13,7 @@ module Mongoid
       :mi => EARTH_RADIUS_KM*0.621371192, # taken directly from mongodb
       :ft => EARTH_RADIUS_KM*5280*0.621371192,
     }
-    
+
     LNG_SYMBOLS = [:x, :lon, :long, :lng, :longitude]
     LAT_SYMBOLS = [:y, :lat, :latitude]
 
@@ -33,5 +34,8 @@ module Mongoid
 
     mattr_accessor :distance_formula
     @@distance_formula = :n_vector
+
+    mattr_accessor :paginator
+    @@paginator = :kaminari
   end
 end
