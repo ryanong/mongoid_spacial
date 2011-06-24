@@ -3,14 +3,14 @@ module Mongoid #:nodoc:
   module Criterion #:nodoc:
 
     # NearSpecial criterion is used when performing #near with symbols to get
-    # get a shorthand syntax for where clauses. 
+    # get a shorthand syntax for where clauses.
     #
     # @example Conversion of a simple to complex criterion.
-    #   { :field => { "$nearSphere" => => [20,30]}, '$maxDistance' => 5 } 
+    #   { :field => { "$nearSphere" => => [20,30]}, '$maxDistance' => 5 }
     #   becomes:
     #   { :field.near(:sphere) => {:point => [20,30], :max => 5, :unit => :km} }
     class NearSpacial < Complex
-      
+
       # Convert input to query for near or nearSphere
       #
       # @example
@@ -23,8 +23,10 @@ module Mongoid #:nodoc:
           v[:point] = v[:point].to_lng_lat if v[:point].respond_to?(:to_lng_lat)
           query = {"$#{operator}" => v[:point] }
           if v[:max]
-            unit = Mongoid::Spacial.earth_radius[v[:unit]]
-            query['$maxDistance'] = (unit) ? v[:max]/unit : v[:max] 
+            if unit = Mongoid::Spacial.earth_radius[v[:unit]]
+              unit = (operator =~ /sphere/i) ? unit : unit * Mongoid::Spacial::RAD_PER_DEG
+              query['$maxDistance'] = v[:max]/unit
+            end
           end
           query
         elsif v.kind_of? Array

@@ -32,8 +32,10 @@ module Mongoid #:nodoc:
             if input[:point]
               input[:point] = input[:point].to_lng_lat if input[:point].respond_to?(:to_lng_lat)
               if input[:max]
-                unit = Mongoid::Spacial.earth_radius[input[:unit]]
-                input[:max] = input[:max]/unit if unit
+                if unit = Mongoid::Spacial.earth_radius[input[:unit]]
+                  unit = (operator =~ /sphere/i) ? unit : unit * Mongoid::Spacial::RAD_PER_DEG
+                  input[:max] = input[:max]/unit
+                end
                 input = [input[:point],input[:max]]
               else
                 input = input[:point]
