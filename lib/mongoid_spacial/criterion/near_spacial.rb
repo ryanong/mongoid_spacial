@@ -24,8 +24,10 @@ module Mongoid #:nodoc:
           query = {"$#{operator}" => v[:point] }
           if v[:max]
             if unit = Mongoid::Spacial.earth_radius[v[:unit]]
-              unit = (operator =~ /sphere/i) ? unit : unit * Mongoid::Spacial::RAD_PER_DEG
+              unit *= Mongoid::Spacial::RAD_PER_DEG unless operator =~ /sphere/i
               query['$maxDistance'] = v[:max]/unit
+            else
+              query['$maxDistance'] = v[:max]
             end
           end
           query
