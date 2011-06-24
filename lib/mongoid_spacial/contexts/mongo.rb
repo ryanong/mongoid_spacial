@@ -42,6 +42,10 @@ module Mongoid #:nodoc:
           opts[:unit] = (opts[:spherical]) ? unit : unit * Mongoid::Spacial::RAD_PER_DEG
         end
 
+        if unit = Mongoid::Spacial.earth_radius[opts[:distance_multiplier]]
+          opts[:distance_multiplier] = (opts[:spherical]) ? unit : unit * Mongoid::Spacial::RAD_PER_DEG
+        end
+
         opts[:distance_multiplier] = opts[:unit] if opts[:unit].kind_of?(Numeric)
   
         # setup paging.

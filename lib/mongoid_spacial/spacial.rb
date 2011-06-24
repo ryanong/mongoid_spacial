@@ -20,7 +20,11 @@ module Mongoid
     LAT_SYMBOLS = [:y, :lat, :latitude]
 
     def self.distance(p1,p2,unit = nil, formula = nil)
-      formula ||= self.distance_formula
+      formula ||= @@distance_formula
+
+      p1 = p1.to_lng_lat if p1.respond_to?(:to_lng_lat)
+      p1 = p1.to_lng_lat if p1.respond_to?(:to_lng_lat)
+      
       unit = earth_radius[unit] if unit.kind_of?(Symbol) && earth_radius[unit]
       rads = Formulas.send(formula, p1, p2)
       (unit.kind_of?(Numeric)) ? unit*rads : rads
