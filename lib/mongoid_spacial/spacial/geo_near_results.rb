@@ -34,7 +34,7 @@ module Mongoid
             end
             @opts[:calculate].each do |key|
               key = (key.to_s+'_distance').to_sym
-              res.geo[key] = res.distance_from(key,center, @opts[:distance_multiplier])
+              res.geo[key] = res.distance_from(key,center,{:unit =>@opts[:unit] || @opts[:distance_multiplier], :spherical => @opts[:spherical]} )
               res.geo[:distance] = res.geo[key] if primary && key == primary
             end
           end
@@ -51,7 +51,7 @@ module Mongoid
 
       def page(page, options = {})
         new_collection = self.dup
-        
+
         options = self.opts.merge(options)
 
         options[:page] = page || 1

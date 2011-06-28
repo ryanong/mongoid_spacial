@@ -21,9 +21,9 @@ module Mongoid
       end
 
       module InstanceMethods #:nodoc:
-        def distance_from(key,p2, unit = nil, formula = nil)
+        def distance_from(key,p2, opts = {})
           p1 = self.send(key)
-          Mongoid::Spacial.distance(p1, p2, unit, formula = nil)
+          Mongoid::Spacial.distance(p1, p2, opts)
         end
       end
     end
