@@ -36,22 +36,14 @@ module Mongoid #:nodoc:
         center = center.to_lng_lat if center.respond_to?(:to_lng_lat)
 
         # set default opts
-        if opts[:skip].blank?
-          opts[:skip] = 0
-        elsif opts[:skip].respond_to?(:to_i)
-          opts[:skip] = opts[:skip].to_i
-        end
+        opts[:skip] ||= 0
 
         if unit = Mongoid::Spacial.earth_radius[opts[:unit]]
           opts[:unit] = (opts[:spherical]) ? unit : unit * Mongoid::Spacial::RAD_PER_DEG
-        elsif opts[:unit].respond_to?(:to_f)
-          opts[:unit] = opts[:unit].to_f
         end
 
         if unit = Mongoid::Spacial.earth_radius[opts[:distance_multiplier]]
           opts[:distance_multiplier] = (opts[:spherical]) ? unit : unit * Mongoid::Spacial::RAD_PER_DEG
-        elsif opts[:distance_multiplier].respond_to?(:to_f)
-          opts[:distance_multiplier] = opts[:distance_multiplier].to_f
         end
 
         opts[:distance_multiplier] = opts[:unit] if opts[:unit].kind_of?(Numeric)
@@ -70,8 +62,6 @@ module Mongoid #:nodoc:
                               else
                                 Mongoid::Spacial.default_per_page
                               end
-           elsif opts[:per_page].respond_to?(:to_i)
-             opts[:per_page] = opts[:per_page].to_i
            end
 
         end
@@ -91,11 +81,11 @@ module Mongoid #:nodoc:
 
         # create limit and use skip
         if opts[:num]
-          query['num']         = opts[:skip] + opts[:num].to_i
+          query['num']         = opts[:skip].to_i + opts[:num].to_i
         elsif opts[:limit]
-          query['num']         = opts[:skip] + opts[:limit].to_i
+          query['num']         = opts[:skip].to_i + opts[:limit].to_i
         elsif opts[:page]
-          query['num'] = opts[:skip] +(opts[:page] * opts[:per_page])
+          query['num'] = opts[:skip].to_i + (opts[:page].to_i * opts[:per_page].to_i)
         end
 
         # allow the use of complex werieis
@@ -107,7 +97,7 @@ module Mongoid #:nodoc:
 
         if opts[:max_distance]
           query['maxDistance'] = opts[:max_distance].to_f
-          query['maxDistance'] = query['maxDistance']/opts[:unit] if opts[:unit]
+          query['maxDistance'] = query['maxDistance']/opts[:unit].to_f if opts[:unit]
         end
 
         if klass.db.connection.server_version >= '1.7'
@@ -115,7 +105,7 @@ module Mongoid #:nodoc:
 
           # mongodb < 1.7 returns degrees but with earth flat. in Mongodb 1.7 you can set sphere and let mongodb calculate the distance in Miles or KM
           # for mongodb < 1.7 we need to run Haversine first before calculating degrees to Km or Miles. See below.
-          query['distanceMultiplier'] = opts[:distance_multiplier] if opts[:distance_multiplier]
+          query['distanceMultiplier'] = opts[:distance_multiplier].to_f if opts[:distance_multiplier]
         end
         query
       end

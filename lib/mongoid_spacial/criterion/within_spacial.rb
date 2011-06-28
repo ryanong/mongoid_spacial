@@ -28,20 +28,22 @@ module Mongoid #:nodoc:
           end
         elsif ['center','centerSphere'].index(@operator)
 
-          if input.kind_of? Hash
-            if input[:point]
-              input[:point] = input[:point].to_lng_lat if input[:point].respond_to?(:to_lng_lat)
-              if input[:max]
-                if unit = Mongoid::Spacial.earth_radius[input[:unit]]
-                  unit *= Mongoid::Spacial::RAD_PER_DEG unless operator =~ /sphere/i
-                  input[:max] = input[:max]/unit
-                end
-                input = [input[:point],input[:max]]
-              else
-                input = input[:point]
+          if input.kind_of?(Hash) || input.kind_of?(ActiveSupport::OrderedHash)
+            raise ':point required to make valid query' unless input[:point]
+            input[:point] = input[:point].to_lng_lat if input[:point].respond_to?(:to_lng_lat)
+            if input[:max]
+              input[:max] = input[:max].to_f
+
+              if unit = Mongoid::Spacial.earth_radius[input[:unit]]
+                unit *= Mongoid::Spacial::RAD_PER_DEG unless operator =~ /sphere/i
+                input[:unit] = unit
               end
-            elsif RUBY_VERSION.to_f > 1.9
-              input = input.values
+
+              input[:max] = input[:max]/input[:unit].to_f if input[:unit]
+
+              input = [input[:point],input[:max]]
+            else
+              input = input[:point]
             end
           end
 
