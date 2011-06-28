@@ -15,7 +15,7 @@ module Mongoid #:nodoc:
       #
       # @example
       #   near = NearSpacial.new(:key => :field, :operator => "near")
-      #   near.to_mongo_query({:point => [:50,50], :max_distance => 5, :unit => :km}) => { '$near : [50,50]' , '$maxDistance' : 5 }
+      #   near.to_mongo_query({:point => [:50,50], :max => 5, :unit => :km}) => { '$near : [50,50]' , '$maxDistance' : 5 }
       #
       # @param [Hash,Array] v input to conver to query
       def to_mongo_query(v)

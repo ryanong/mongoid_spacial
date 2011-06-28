@@ -36,24 +36,33 @@ module Mongoid #:nodoc:
         center = center.to_lng_lat if center.respond_to?(:to_lng_lat)
 
         # set default opts
-        opts[:skip] ||= 0
-        
+        if opts[:skip].blank?
+          opts[:skip] = 0
+        elsif opts[:skip].respond_to?(:to_i)
+          opts[:skip] = opts[:skip].to_i
+        end
+
         if unit = Mongoid::Spacial.earth_radius[opts[:unit]]
           opts[:unit] = (opts[:spherical]) ? unit : unit * Mongoid::Spacial::RAD_PER_DEG
+        elsif opts[:unit].respond_to?(:to_f)
+          opts[:unit] = opts[:unit].to_f
         end
 
         if unit = Mongoid::Spacial.earth_radius[opts[:distance_multiplier]]
           opts[:distance_multiplier] = (opts[:spherical]) ? unit : unit * Mongoid::Spacial::RAD_PER_DEG
+        elsif opts[:distance_multiplier].respond_to?(:to_f)
+          opts[:distance_multiplier] = opts[:distance_multiplier].to_f
         end
 
         opts[:distance_multiplier] = opts[:unit] if opts[:unit].kind_of?(Numeric)
-  
+
         # setup paging.
         if opts.has_key?(:page)
           opts[:page] ||= 1
           opts[:paginator] ||= Mongoid::Spacial.paginator()
 
-          opts[:per_page] ||= case opts[:paginator]
+           if opts[:per_page].blank?
+             opts[:per_page] = case opts[:paginator]
                               when :will_paginate
                                 @document.per_page
                               when :kaminari
@@ -61,6 +70,10 @@ module Mongoid #:nodoc:
                               else
                                 Mongoid::Spacial.default_per_page
                               end
+           elsif opts[:per_page].respond_to?(:to_i)
+             opts[:per_page] = opts[:per_page].to_i
+           end
+
         end
         opts[:query] = create_geo_near_query(center,opts)
         results = klass.db.command(opts[:query])
@@ -80,7 +93,7 @@ module Mongoid #:nodoc:
         if opts[:num]
           query['num']         = opts[:skip] + opts[:num].to_i
         elsif opts[:limit]
-          query['num']         = opts[:skip] + opts[:limit]
+          query['num']         = opts[:skip] + opts[:limit].to_i
         elsif opts[:page]
           query['num'] = opts[:skip] +(opts[:page] * opts[:per_page])
         end
@@ -93,7 +106,7 @@ module Mongoid #:nodoc:
         end
 
         if opts[:max_distance]
-          query['maxDistance'] = opts[:max_distance]
+          query['maxDistance'] = opts[:max_distance].to_f
           query['maxDistance'] = query['maxDistance']/opts[:unit] if opts[:unit]
         end
 

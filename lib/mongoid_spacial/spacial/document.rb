@@ -1,6 +1,6 @@
 module Mongoid
   module Spacial
-    module Document 
+    module Document
       extend ActiveSupport::Concern
 
       included do
@@ -22,7 +22,7 @@ module Mongoid
 
       module InstanceMethods #:nodoc:
         def distance_from(key,p2, unit = nil, formula = nil)
-          p1 = res.send(key)
+          p1 = self.send(key)
           Mongoid::Spacial.distance(p1, p2, unit, formula = nil)
         end
       end
