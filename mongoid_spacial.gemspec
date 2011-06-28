@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mongoid_spacial}
-  s.version = "0.2.5"
+  s.version = "0.2.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = [%q{Ryan Ong}]
@@ -47,6 +47,7 @@ Gem::Specification.new do |s|
     "spec/functional/mongoid/contexts/mongo_spec.rb",
     "spec/functional/mongoid/criterion/inclusion_spec.rb",
     "spec/functional/mongoid/spacial/geo_near_results_spec.rb",
+    "spec/functional/mongoid/spacial_spec.rb",
     "spec/models/account.rb",
     "spec/models/acolyte.rb",
     "spec/models/address.rb",
@@ -122,7 +123,8 @@ Gem::Specification.new do |s|
     "spec/unit/mongoid/criterion/inclusion_spec.rb",
     "spec/unit/mongoid/criterion/near_spacial_spec.rb",
     "spec/unit/mongoid/criterion/within_spacial_spec.rb",
-    "spec/unit/mongoid/spacial/formulas_spec.rb"
+    "spec/unit/mongoid/spacial/formulas_spec.rb",
+    "spec/unit/mongoid/spacial_spec.rb"
   ]
   s.homepage = %q{http://github.com/ryanong/mongoid_spacial}
   s.licenses = [%q{MIT}]
