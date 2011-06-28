@@ -19,15 +19,19 @@ module Mongoid
     LNG_SYMBOLS = [:x, :lon, :long, :lng, :longitude]
     LAT_SYMBOLS = [:y, :lat, :latitude]
 
-    def self.distance(p1,p2,unit = nil, formula = nil)
-      formula ||= @@distance_formula
-
+    def self.distance(p1,p2,opts = {})
+      opts[:formula] ||= (opts[:spherical]) ? @@spherical_distance_formula : :pythagorean_theorem
       p1 = p1.to_lng_lat if p1.respond_to?(:to_lng_lat)
       p2 = p2.to_lng_lat if p2.respond_to?(:to_lng_lat)
 
-      unit = earth_radius[unit] if unit.kind_of?(Symbol) && earth_radius[unit]
-      rads = Formulas.send(formula, p1, p2)
-      (unit.kind_of?(Numeric)) ? unit*rads : rads
+      rads = Formulas.send(opts[:formula], p1, p2)
+
+      if unit = earth_radius[opts[:unit]]
+        opts[:unit] = (rads.instance_variable_get("@radian")) ? unit : unit * RAD_PER_DEG
+      end
+
+      rads *= opts[:unit].to_f if opts[:unit]
+      rads
     end
 
     mattr_accessor :lng_symbols
@@ -39,13 +43,14 @@ module Mongoid
     mattr_accessor :earth_radius
     @@earth_radius = EARTH_RADIUS.dup
 
-    mattr_accessor :distance_formula
-    @@distance_formula = :n_vector
-
-      mattr_accessor :paginator
-      @@paginator = :array
+    mattr_accessor :paginator
+    @@paginator = :array
 
     mattr_accessor :default_per_page
     @@default_per_page = 25
+
+    mattr_accessor :spherical_distance_formula
+    @@spherical_distance_formula = :n_vector
+
   end
 end
