@@ -50,7 +50,7 @@ module Mongoid
       end
 
       def page(page, options = {})
-        new_collection = self.dup
+        new_collection = self.clone
 
         options = self.opts.merge(options)
 
@@ -70,7 +70,12 @@ module Mongoid
         options[:per_page] = options[:per_page].to_i
 
         start = (options[:page]-1)*options[:per_page] # assuming current_page is 1 based.
-        new_collection.replace(@_original_array[@opts[:skip]+start, options[:per_page]] || [])
+
+        if options[:original]
+          new_collection.replace(@_original_array[@opts[:skip]+start, options[:per_page]] || [])
+        else
+          new_collection.slice!(@opts[:skip]+start, options[:per_page])
+        end
 
         new_collection.opts[:page] = options[:page]
         new_collection.opts[:paginator] = options[:paginator]
@@ -81,6 +86,20 @@ module Mongoid
 
       def per(num)
         self.page(current_page, :per_page => num)
+      end
+
+      def reset!
+        self.replace(@_original_array)
+        new_collection.opts[:page] = nil
+        new_collection.opts[:paginator] = nil
+        new_collection.opts[:per_page] = nil
+        self
+      end
+
+      def reset
+        clone = self.clone
+        clone.reset!
+        clone
       end
 
       def total_entries

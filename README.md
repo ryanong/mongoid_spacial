@@ -75,7 +75,7 @@ Mongoid Geo has extended all built in spacial symbol extentions
   * River.where(:source.near => [[-73.98, 40.77],5]) # sets max distance of 5
   * River.where(:source.near => {:point => [-73.98, 40.77], :max => 5}) # sets max distance of 5
   * River.where(:source.near(:sphere) => [[-73.98, 40.77],5]) # sets max distance of 5 radians
-  * River.where(:source.near(:sphere) => {:point => [-73.98, 40.77], :max => 5, :unit => :km}) # sets max distance of 5 km    
+  * River.where(:source.near(:sphere) => {:point => [-73.98, 40.77], :max => 5, :unit => :km}) # sets max distance of 5 km
   * River.where(:source.near(:sphere) => [-73.98, 40.77])
 * within
   * River.where(:source.within(:box) => [[-73.99756,40.73083], [-73.988135,40.741404]])
@@ -94,7 +94,7 @@ River.where(:name=>'hudson').geo_near({:lat => 40.73083, :lng => -73.99756})
 # geo\_near accepts a few parameters besides a point
 # :num = limit
 # :query = where
-# :unit - [:km, :m, :mi, :ft] - converts :max\_distance to appropriate values and automatically sets :distance\_multiplier. accepts 
+# :unit - [:km, :m, :mi, :ft] - converts :max\_distance to appropriate values and automatically sets :distance\_multiplier. accepts
 # :max\_distance - Integer
 # :distance\_multiplier - Integer
 # :spherical - true - To enable spherical calculations
@@ -130,15 +130,18 @@ River.geo_near([-73.99756,40.73083], :page => 1)
 # #page(page\_number, opts = {})
 #  opts:
 #   :per\_page
-#   :paginator 
+#   :paginator
 # #per(per\_page\_number, opts = {})
 #  opts:
 #   :page
 #   :paginator
 #
 # both return a GeoNearResults, which is really just a modified Array
-# #per really just #page but just moves the options around 
-River.geo_near([-73.99756,40.73083]).per(25).page(1)
+# #per really just #page but just moves the options around
+rivers = River.geo_near([-73.99756,40.73083]).sort_by!{|r| r.modified_distance}
+rivers = rivers.per(25).page(1)
+rivers = rivers.page(5, :original => 1) # by adding the original option you can re-paginate to any area.
+rivers.reset! # resets the object to it is original state right after query.
 ```
 
 Thanks
