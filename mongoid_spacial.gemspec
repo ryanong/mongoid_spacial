@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mongoid_spacial}
-  s.version = "0.2.6"
+  s.version = "0.2.7"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = [%q{Ryan Ong}]
-  s.date = %q{2011-06-28}
+  s.date = %q{2011-07-11}
   s.description = %q{A Mongoid Extention that simplifies and adds support for MongoDB Geo Spacial Calculations.}
   s.email = %q{ryanong@gmail.com}
   s.extra_rdoc_files = [
