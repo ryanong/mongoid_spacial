@@ -62,6 +62,7 @@ module Mongoid #:nodoc:
                               else
                                 Mongoid::Spacial.default_per_page
                               end
+             opts[:per_page] = opts[:per_page].to_i
            end
 
         end

@@ -54,7 +54,7 @@ module Mongoid
 
         options = self.opts.merge(options)
 
-        options[:page] = page || 1
+        options[:page] = (page) ? page.to_i : 1
 
         options[:paginator] ||= Mongoid::Spacial.paginator()
 
@@ -67,6 +67,7 @@ module Mongoid
                               Mongoid::Spacial.default_per_page
                             end
 
+        options[:per_page] = options[:per_page].to_i
 
         start = (options[:page]-1)*options[:per_page] # assuming current_page is 1 based.
         new_collection.replace(@_original_array[@opts[:skip]+start, options[:per_page]] || [])
