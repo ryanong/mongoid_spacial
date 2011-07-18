@@ -138,9 +138,8 @@ River.geo_near([-73.99756,40.73083], :page => 1)
 #
 # both return a GeoNearResults, which is really just a modified Array
 # #per really just #page but just moves the options around
-rivers = River.geo_near([-73.99756,40.73083]).sort_by!{|r| r.modified_distance}
+rivers = River.geo_near([-73.99756,40.73083]).sort_by!{|r| r.geo[:distance] * r.multiplier }
 rivers = rivers.per(25).page(1)
-rivers = rivers.page(5, :original => 1) # by adding the original option you can re-paginate to any area.
 rivers.reset! # resets the object to it is original state right after query.
 ```
 

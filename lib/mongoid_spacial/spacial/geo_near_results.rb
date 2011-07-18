@@ -1,18 +1,17 @@
 module Mongoid
   module Spacial
     class GeoNearResults < Array
-      attr_reader :stats, :document, :_original_array
+      attr_reader :stats, :document, :_original_array, :_original_opts
       attr_accessor :opts
 
       def initialize(document,results,opts = {})
         raise "class must include Mongoid::Spacial::Document" unless document.respond_to?(:spacial_fields_indexed)
         @document = document
         @opts = opts
+        @_original_opts = opts.clone
         @stats = results['stats'] || {}
         @opts[:skip] ||= 0
         @opts[:total_entries] = opts[:query]["num"] || @stats['nscanned']
-        @limit_value = opts[:per_page]
-        @current_page = opts[:page]
 
         @_original_array = results['results'].collect do |result|
           res = Mongoid::Factory.from_db(@document, result.delete('obj'))
@@ -40,10 +39,10 @@ module Mongoid
           end
           res
         end
-
         if @opts[:page]
           start = (@opts[:page]-1)*@opts[:per_page] # assuming current_page is 1 based.
-          super(@_original_array[@opts[:skip]+start, @opts[:per_page]] || [])
+          @_paginated_array = @_original_array.clone
+          super(@_paginated_array[@opts[:skip]+start, @opts[:per_page]] || [])
         else
           super(@_original_array[@opts[:skip]..-1] || [])
         end
@@ -51,35 +50,19 @@ module Mongoid
 
       def page(page, options = {})
         new_collection = self.clone
+        original = options.delete(:original)
+        new_collection.opts.merge!(options)
+        new_collection.opts[:paginator] ||= Mongoid::Spacial.paginator
 
-        options = self.opts.merge(options)
+        start = (new_collection.current_page-1)*new_collection.limit_value # assuming current_page is 1 based.
 
-        options[:page] = (page) ? page.to_i : 1
-
-        options[:paginator] ||= Mongoid::Spacial.paginator()
-
-        options[:per_page] ||= case options[:paginator]
-                            when :will_paginate
-                              @document.per_page
-                            when :kaminari
-                              Kaminari.config.default_per_page
-                            else
-                              Mongoid::Spacial.default_per_page
-                            end
-
-        options[:per_page] = options[:per_page].to_i
-
-        start = (options[:page]-1)*options[:per_page] # assuming current_page is 1 based.
-
-        if options[:original]
-          new_collection.replace(@_original_array[@opts[:skip]+start, options[:per_page]] || [])
+        if original
+          @_paginated_array = @_original_array.clone
+          new_collection.replace(@_original_array[new_collection.opts[:skip]+start, new_collection.limit_value] || [])
         else
-          new_collection.slice!(@opts[:skip]+start, options[:per_page])
+          @_paginated_array ||= self.to_a
+          new_collection.replace(@_paginated_array[new_collection.opts[:skip]+start, new_collection.limit_value])
         end
-
-        new_collection.opts[:page] = options[:page]
-        new_collection.opts[:paginator] = options[:paginator]
-        new_collection.opts[:per_page] = options[:per_page]
 
         new_collection
       end
@@ -90,10 +73,9 @@ module Mongoid
 
       def reset!
         self.replace(@_original_array)
-        new_collection.opts[:page] = nil
-        new_collection.opts[:paginator] = nil
-        new_collection.opts[:per_page] = nil
-        self
+        @opts = @_original_opts
+        @_paginated_array = nil
+        true
       end
 
       def reset
@@ -107,11 +89,23 @@ module Mongoid
       end
 
       def current_page
-        @opts[:page]
+        page = (@opts[:page]) ? @opts[:page].to_i.abs : 1
+        (@opts[:page] < 1) ? 1 : page
       end
 
       def limit_value
-        @opts[:per_page]
+        if @opts[:per_page]
+          @opts[:per_page] = @opts[:per_page].to_i.abs
+        else
+          @opts[:per_page] = case new_collection.opts[:paginator]
+                             when :will_paginate
+                               @document.per_page
+                             when :kaminari
+                               Kaminari.config.default_per_page
+                             else
+                               Mongoid::Spacial.default_per_page
+                             end
+        end
       end
       alias_method :per_page, :limit_value
 
