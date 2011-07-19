@@ -90,14 +90,14 @@ module Mongoid
 
       def current_page
         page = (@opts[:page]) ? @opts[:page].to_i.abs : 1
-        (@opts[:page] < 1) ? 1 : page
+        (page < 1) ? 1 : page
       end
 
       def limit_value
         if @opts[:per_page]
           @opts[:per_page] = @opts[:per_page].to_i.abs
         else
-          @opts[:per_page] = case new_collection.opts[:paginator]
+          @opts[:per_page] = case self.opts[:paginator]
                              when :will_paginate
                                @document.per_page
                              when :kaminari
