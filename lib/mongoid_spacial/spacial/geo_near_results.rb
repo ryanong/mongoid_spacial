@@ -11,7 +11,7 @@ module Mongoid
         @_original_opts = opts.clone
         @stats = results['stats'] || {}
         @opts[:skip] ||= 0
-        @opts[:total_entries] = @stats['nscanned']
+        @opts[:total_entries] = opts[:query]["num"] || @stats['nscanned']
 
         @_original_array = results['results'].collect do |result|
           res = Mongoid::Factory.from_db(@document, result.delete('obj'))
@@ -32,8 +32,7 @@ module Mongoid
               primary = @document.spacial_fields_indexed.first
             end
             @opts[:calculate].each do |key|
-              key = (key.to_s+'_distance').to_sym
-              res.geo[key] = res.distance_from(key,center,{:unit =>@opts[:unit] || @opts[:distance_multiplier], :spherical => @opts[:spherical]} )
+              res.geo[(key.to_s+'_distance').to_sym] = res.distance_from(key,center,{:unit =>@opts[:unit] || @opts[:distance_multiplier], :spherical => @opts[:spherical]} )
               res.geo[:distance] = res.geo[key] if primary && key == primary
             end
           end
