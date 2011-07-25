@@ -48,23 +48,27 @@ module Mongoid
         end
       end
 
-      def page(page, options = {})
+      def page(*args)
         new_collection = self.clone
-        original = options.delete(:original)
-        new_collection.opts.merge!(options)
-        new_collection.opts[:paginator] ||= Mongoid::Spacial.paginator
+        new_collection.page!(*args)
+        new_collection
+      end
 
-        start = (new_collection.current_page-1)*new_collection.limit_value # assuming current_page is 1 based.
+      def page!(page, options = {})
+        original = options.delete(:original)
+        self.opts.merge!(options)
+        self.opts[:paginator] ||= Mongoid::Spacial.paginator
+        self.opts[:page] = page
+        start = (self.current_page-1)*self.limit_value # assuming current_page is 1 based.
 
         if original
           @_paginated_array = @_original_array.clone
-          new_collection.replace(@_original_array[new_collection.opts[:skip]+start, new_collection.limit_value] || [])
+          self.replace(@_paginated_array[self.opts[:skip]+start, self.limit_value] || [])
         else
           @_paginated_array ||= self.to_a
-          new_collection.replace(@_paginated_array[new_collection.opts[:skip]+start, new_collection.limit_value])
+          self.replace(@_paginated_array[self.opts[:skip]+start, self.limit_value])
         end
-
-        new_collection
+        true
       end
 
       def per(num)

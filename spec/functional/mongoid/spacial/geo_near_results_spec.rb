@@ -16,8 +16,12 @@ describe Mongoid::Spacial::GeoNearResults do
   end
 
   context ":paginator :array" do
-    let!(:bars) { Bar.geo_near([1,1]) }
-    let!(:sorted_bars) { Bar.geo_near([1,1]).sort_by {|b| b.name.to_i}}
+    let(:bars) { Bar.geo_near([1,1]) }
+    let(:sorted_bars) {
+      bars = Bar.geo_near([1,1])
+      bars.sort_by! {|b| b.name.to_i}
+      bars
+    }
     [nil,1,2].each do |page|
       it "page=#{page} should have 25" do
         bars.page(page).size.should == 25
@@ -48,6 +52,7 @@ describe Mongoid::Spacial::GeoNearResults do
     it "page=10 per=5" do
       bars.per(5).page(10).should == bars[45..50]
     end
+
   end
 
   context ":paginator :kaminari" do
