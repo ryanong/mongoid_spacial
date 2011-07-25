@@ -11,7 +11,7 @@ module Mongoid
         @_original_opts = opts.clone
         @stats = results['stats'] || {}
         @opts[:skip] ||= 0
-        @opts[:total_entries] = opts[:query]["num"] || @stats['nscanned']
+        @opts[:total_entries] = @stats['nscanned']
 
         @_original_array = results['results'].collect do |result|
           res = Mongoid::Factory.from_db(@document, result.delete('obj'))
@@ -114,7 +114,7 @@ module Mongoid
       alias_method :per_page, :limit_value
 
       def num_pages
-        @opts[:total_entries]/@opts[:per_page]
+        (self.total_entries && @opts[:per_page]) ? self.total_entries/@opts[:per_page] : nil
       end
       alias_method :total_pages, :num_pages
 
