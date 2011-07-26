@@ -90,6 +90,7 @@ module Mongoid
       def total_entries
         @opts[:total_entries]
       end
+      alias_method :total_count, :total_entries
 
       def current_page
         page = (@opts[:page]) ? @opts[:page].to_i.abs : 1
