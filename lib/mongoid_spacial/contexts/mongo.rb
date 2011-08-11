@@ -76,7 +76,7 @@ module Mongoid #:nodoc:
       def create_geo_near_query(center,opts)
         # minimum query
         query = {
-          :geoNear  => klass.to_s.tableize,
+          :geoNear  => klass.collection_name,
           :near     => center,
         }
 
