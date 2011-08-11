@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mongoid_spacial}
-  s.version = "0.2.10"
+  s.version = "0.2.11"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = [%q{Ryan Ong}]
-  s.date = %q{2011-07-25}
+  s.date = %q{2011-08-11}
   s.description = %q{A Mongoid Extention that simplifies and adds support for MongoDB Geo Spacial Calculations.}
   s.email = %q{ryanong@gmail.com}
   s.extra_rdoc_files = [
@@ -129,7 +129,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/ryanong/mongoid_spacial}
   s.licenses = [%q{MIT}]
   s.require_paths = [%q{lib}]
-  s.rubygems_version = %q{1.8.5}
+  s.rubygems_version = %q{1.8.6}
   s.summary = %q{A Mongoid Extention that simplifies and adds support for MongoDB Geo Spacial Calculations.}
 
   if s.respond_to? :specification_version then
@@ -142,7 +142,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<bson_ext>, [">= 1.3"])
       s.add_development_dependency(%q<rspec>, ["~> 2.3.0"])
       s.add_development_dependency(%q<yard>, ["~> 0.6.0"])
-      s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_development_dependency(%q<bundler>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.6.2"])
       s.add_development_dependency(%q<rcov>, [">= 0"])
       s.add_development_dependency(%q<linecache19>, [">= 0"])
@@ -154,7 +154,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<bson_ext>, [">= 1.3"])
       s.add_dependency(%q<rspec>, ["~> 2.3.0"])
       s.add_dependency(%q<yard>, ["~> 0.6.0"])
-      s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_dependency(%q<bundler>, [">= 0"])
       s.add_dependency(%q<jeweler>, ["~> 1.6.2"])
       s.add_dependency(%q<rcov>, [">= 0"])
       s.add_dependency(%q<linecache19>, [">= 0"])
@@ -167,7 +167,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<bson_ext>, [">= 1.3"])
     s.add_dependency(%q<rspec>, ["~> 2.3.0"])
     s.add_dependency(%q<yard>, ["~> 0.6.0"])
-    s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+    s.add_dependency(%q<bundler>, [">= 0"])
     s.add_dependency(%q<jeweler>, ["~> 1.6.2"])
     s.add_dependency(%q<rcov>, [">= 0"])
     s.add_dependency(%q<linecache19>, [">= 0"])
