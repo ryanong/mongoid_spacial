@@ -16,7 +16,7 @@ field.option :spacial do |model,field,options|
 
     define_method field.name do
       output = self[field.name] || [nil,nil]
-      output = (options[:return_array]) ? lng_lat_a : {lng_meth => output[0], lat_meth => output[1]}
+      output = {lng_meth => output[0], lat_meth => output[1]} unless options[:return_array]
       return options[:class].new(output) if options[:class]
       output
     end
@@ -25,7 +25,7 @@ field.option :spacial do |model,field,options|
       if arg.kind_of?(Hash) && arg[lng_meth] && arg[lat_meth]
         arg = [arg[lng_meth], arg[lat_meth]]
       elsif arg.respond_to?(:to_lng_lat)
-        arg = arg.to_lat_lng if arg.respond_to?(:to_lat_lng)
+        arg = arg.to_lng_lat
       end
       self[field.name]=arg
       return arg[0..1] if options[:return_array]
