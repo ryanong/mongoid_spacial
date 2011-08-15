@@ -28,6 +28,7 @@ field.option :spacial do |model,field,options|
         arg = arg.to_lng_lat
       end
       self[field.name]=arg
+      arg = [nil,nil] if arg.nil?
       return arg[0..1] if options[:return_array]
       return h = {lng_meth => arg[0], lat_meth => arg[1]} if options[:class].blank?
       options[:class].new(h)
