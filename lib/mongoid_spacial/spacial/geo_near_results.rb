@@ -5,13 +5,12 @@ module Mongoid
       attr_accessor :opts
 
       def initialize(document,results,opts = {})
-        raise "class must include Mongoid::Spacial::Document" unless document.respond_to?(:spacial_fields_indexed)
+        raise "#{document.name} class must include Mongoid::Spacial::Document" unless document.respond_to?(:spacial_fields_indexed)
         @document = document
         @opts = opts
         @_original_opts = opts.clone
         @stats = results['stats'] || {}
         @opts[:skip] ||= 0
-        @opts[:total_entries] = opts[:query]["num"] || @stats['nscanned']
 
         @_original_array = results['results'].collect do |result|
           res = Mongoid::Factory.from_db(@document, result.delete('obj'))
@@ -88,7 +87,7 @@ module Mongoid
       end
 
       def total_entries
-        @opts[:total_entries]
+        (@_paginated_array) ? @_paginated_array.count : @_original_array.count
       end
       alias_method :total_count, :total_entries
 
