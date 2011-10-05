@@ -23,14 +23,15 @@ field.option :spacial do |model,field,options|
 
     define_method "#{field.name}=" do |arg|
       if arg.kind_of?(Hash) && arg[lng_meth] && arg[lat_meth]
-        arg = [arg[lng_meth], arg[lat_meth]]
+        arg = [arg[lng_meth].to_f, arg[lat_meth].to_f]
       elsif arg.respond_to?(:to_lng_lat)
         arg = arg.to_lng_lat
       end
       self[field.name]=arg
       arg = [nil,nil] if arg.nil?
       return arg[0..1] if options[:return_array]
-      return h = {lng_meth => arg[0], lat_meth => arg[1]} if options[:class].blank?
+      h = {lng_meth => arg[0], lat_meth => arg[1]}
+      return h if options[:class].blank?
       options[:class].new(h)
     end
   end

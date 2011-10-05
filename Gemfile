@@ -1,31 +1,4 @@
-source "http://rubygems.org"
-# Add dependencies required to use your gem here.
-# Example:
-#   gem "activesupport", ">= 2.3.5"
+source 'http://rubygems.org'
 
-# Add dependencies to develop your gem here.
-# Include everything needed to run rake, tests, features, etc.
-gem 'mongoid'
-gem 'activesupport'
-
-group :development do
-  gem "bson",           '>= 1.3',  :platforms => [:jruby] # for non jruby apps, require bson_ext in your Gemfile to boost performance
-  gem "bson_ext",       '>= 1.3',  :platforms => [:mri]
-  gem "rspec", "~> 2.3.0"
-  gem "yard", "~> 0.6.0"
-  gem "bundler"
-  gem "jeweler", "~> 1.6.2"
-  gem "rcov", ">= 0"
-end
-
-group :test, :development do
-  gem 'linecache19'
-  gem 'ruby-debug19'
-end
-
-group :test do
-  gem 'rspec-rails'
-  gem 'mocha'
-  gem 'will_paginate'
-  gem 'kaminari'
-end
+# Specify your gem's dependencies in mongoid_spacial.gemspec
+gemspec

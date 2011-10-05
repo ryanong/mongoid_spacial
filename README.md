@@ -148,7 +148,7 @@ Thanks
 * Thanks to Kristian Mandrup for creating the base of the gem and a few of the tests
 * Thanks to CarZen LLC. for letting me release the code we are using
 
-Contributing to mongoid_ranges
+Contributing to mongoid_spacial
 -----------
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
 * Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it
