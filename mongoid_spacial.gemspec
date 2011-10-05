@@ -19,4 +19,9 @@ Gem::Specification.new do |gem|
   gem.add_dependency('activesupport', ["~> 3.0"])
   gem.add_development_dependency('yard', ["~>0.6.0"])
   gem.add_development_dependency('rspec', ['~>2.3'])
+  gem.add_development_dependency('rcov', ['>= 0'])
+  gem.add_development_dependency('mocha', ['>= 0'])
+  gem.add_development_dependency('will_paginate', ['>= 0'])
+  gem.add_development_dependency('kaminari', ['>= 0'])
+
 end
