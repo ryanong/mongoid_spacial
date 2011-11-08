@@ -65,7 +65,7 @@ hudson.source #=> {:lng => -73.935833, :lat => 44.106667}
 hudson.mouth  #=> [-74.026667, 40.703056] # notice how this returned as a lng,lat array because return_array was true
 # notice how the order of lng and lat were switched. it will always come out like this when using spacial.
 # Also adds a handy distance function
-hudson.distance_from(:source, [-74,40], :mi)
+hudson.distance_from(:source, [-74,40], {:unit=>:mi})
 
 ```
 Mongoid Geo has extended all built in spacial symbol extentions
