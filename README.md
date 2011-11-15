@@ -34,6 +34,13 @@ class River
 end
 ```
 
+Generate indexes on MongoDB:
+
+```
+rake db:mongoid:create_indexes
+```
+
+
 Before we manipulate the data mongoid_spacial handles is what we call points.
 
 Points can be:
@@ -142,6 +149,14 @@ rivers = River.geo_near([-73.99756,40.73083]).sort_by!{|r| r.geo[:distance] * r.
 rivers = rivers.per(25).page(1)
 rivers.reset! # resets the object to it is original state right after query.
 ```
+
+Troubleshooting
+-------------
+
+**Mongo::OperationFailure: can't find special index: 2d**
+
+Indexes need to be created. Execute command: <code>rake db:mongoid:create_indexes</code>
+
 
 Thanks
 -----------
