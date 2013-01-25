@@ -6,9 +6,8 @@ SUPPORT = File.join(File.dirname(__FILE__), "support")
 $LOAD_PATH.unshift(MODELS)
 $LOAD_PATH.unshift(SUPPORT)
 
-require "mongoid"
-require "mocha"
 require "rspec"
+require "mongoid"
 require "mongoid_spacial"
 
 LOGGER = Logger.new($stdout)
@@ -28,7 +27,6 @@ Dir[ File.join(MODELS, "*.rb") ].sort.each { |file| require File.basename(file) 
 Dir[ File.join(SUPPORT, "*.rb") ].each { |file| require File.basename(file) }
 
 RSpec.configure do |config|
-  config.mock_with(:mocha)
 
   config.after(:suite) { Mongoid.purge! }
 
