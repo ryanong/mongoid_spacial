@@ -2,8 +2,8 @@
 require File.expand_path('../lib/mongoid_spacial/spacial/version', __FILE__)
 
 Gem::Specification.new do |gem|
-  gem.authors       = ["Ryan Ong"]
-  gem.email         = ["ryanong@gmail.com"]
+  gem.authors       = ["Ryan Ong", "Arthur Neves"]
+  gem.email         = ["ryanong@gmail.com", "arthurnn@gmail.com"]
   gem.description   = %q{mongoid_spacial simplifies spacial calculations. Adds integration into mongoid so pagination and other function continue to work. It adds symbol extentions to simplify query creation.}
   gem.summary       = %q{A Mongoid Extention that simplifies and adds support for MongoDB Geo Spacial Calculations.}
   gem.homepage      = "https://github.com/ryanong/mongoid_spacial"
